@@ -1,38 +1,41 @@
 import express from "express";
 import MongoClient from "mongodb";
+import cors from "cors";
 
 const mongoClient = new MongoClient.MongoClient("mongodb://localhost:27017/", {
-    useUnifiedTopology: true,
+  useUnifiedTopology: true,
 });
 const PORT = 4000;
 const app = express();
 
+app.use(cors());
+
 let db;
 
 mongoClient.connect((err, client) => {
-    if (err) return console.log(err);
+  if (err) return console.log(err);
 
-    db = client;
+  db = client;
 
-    app.locals.collection = client.db("test").collection("test_collection");
+  app.locals.collection = client.db("test").collection("test_collection");
 
-    app.listen(PORT, () => {
-        console.log("Server is running");
-    });
+  app.listen(PORT, () => {
+    console.log("Server is running");
+  });
 });
 
-app.get("/", (req, res) => {
-    const collection = req.app.locals.collection;
+app.get("/allData", (req, res) => {
+  const collection = req.app.locals.collection;
 
-    collection.find({ name: "Paul" }).toArray((err, users) => {
-        if (err) {
-            return console.log(err);
-        }
-        res.send(users);
-    });
+  collection.find({ name: "Paul" }).toArray((err, users) => {
+    if (err) {
+      return console.log(err);
+    }
+    res.send(users);
+  });
 });
 
 process.on("SIGINT", () => {
-    dbClient.close();
-    process.exit();
+  dbClient.close();
+  process.exit();
 });
