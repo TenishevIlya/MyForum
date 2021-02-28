@@ -1,0 +1,9 @@
+.links-panel-style {
+  display: flex;
+  justify-content: space-between;
+}
+
+.link-panel-item {
+  font-size: 20px;
+  margin-right: 10px;
+}
