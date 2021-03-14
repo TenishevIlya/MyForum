@@ -1,9 +1,10 @@
 .main-layout-style {
   width: 100%;
+  padding: 10px 40px;
+  /* background-color: rgb(231, 231, 231); */
 }
 
 .main-layout-header-style {
   border: 1px solid rgb(235, 237, 240);
-  background-color: rgb(210, 210, 223);
-  /* width: 100%; */
+  /* background-color: rgb(170, 200, 224) !important; */
 }

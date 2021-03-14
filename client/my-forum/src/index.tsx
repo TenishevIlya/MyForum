@@ -1,10 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
-import App from "./App";
+import Main from "./Main";
 import Test from "./Test";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import MainLayout from "./Layouts/MainLayout/MainLayout";
+import "antd/dist/antd.css";
 
 ReactDOM.render(
   <React.StrictMode>
@@ -12,7 +13,7 @@ ReactDOM.render(
       <Switch>
         <MainLayout>
           <Route exact path="/">
-            <App />
+            <Main />
           </Route>
           <Route path="/test">
             <Test />

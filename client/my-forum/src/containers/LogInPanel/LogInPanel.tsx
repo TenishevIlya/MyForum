@@ -1,10 +1,7 @@
 import React from "react";
-import { Input } from "antd";
 import Button from "../../components/Button/Button";
 
-const { Search } = Input;
-
-const SearchAndLogContainer: React.FC = () => {
+const LogInPanel: React.FC = () => {
   return (
     <>
       <Button text={"Войти"} />
@@ -12,4 +9,4 @@ const SearchAndLogContainer: React.FC = () => {
   );
 };
 
-export default SearchAndLogContainer;
+export default LogInPanel;

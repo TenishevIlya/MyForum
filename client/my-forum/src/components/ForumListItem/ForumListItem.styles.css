@@ -1,0 +1,16 @@
+.forum-list-item-style {
+  width: 800px;
+  border: 1px solid black;
+  padding: 0 20px;
+}
+
+.forum-list-item-avatar-col-style {
+  margin: 20px 10px 20px 0;
+}
+
+.forum-list-item-data-col-style {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
