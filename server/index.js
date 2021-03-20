@@ -1,41 +1,25 @@
 import express from "express";
-import MongoClient from "mongodb";
 import cors from "cors";
+import mysql from "mysql2";
+import dotenv from "dotenv";
 
-const mongoClient = new MongoClient.MongoClient("mongodb://localhost:27017/", {
-  useUnifiedTopology: true,
-});
-const PORT = 4000;
+dotenv.config();
+
 const app = express();
 
 app.use(cors());
 
-let db;
-
-mongoClient.connect((err, client) => {
-  if (err) return console.log(err);
-
-  db = client;
-
-  app.locals.collection = client.db("test").collection("test_collection");
-
-  app.listen(PORT, () => {
-    console.log("Server is running");
-  });
+const Connection = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
 });
 
-app.get("/allData", (req, res) => {
-  const collection = req.app.locals.collection;
-
-  collection.find({ name: "Paul" }).toArray((err, users) => {
-    if (err) {
-      return console.log(err);
-    }
-    res.send(users);
-  });
+Connection.connect((err) => {
+  if (err) {
+    return err;
+  }
 });
 
-process.on("SIGINT", () => {
-  dbClient.close();
-  process.exit();
-});
+app.listen(process.env.PORT, () => console.log("Server is running"));
