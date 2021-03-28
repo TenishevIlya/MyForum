@@ -1,21 +1,48 @@
 import React from "react";
 import { IForumListItemProps } from "./ForumListItem.types";
-import { Avatar, Row, Col } from "antd";
+import { Avatar, Row, Col, Card } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import "./ForumListItem.styles.css";
-import { map } from "lodash";
+import { map, keyBy, find } from "lodash";
 import Tag from "../Tag/Tag";
+import { spheres } from "../../const";
+import { withRouter } from "react-router-dom";
 
 class ForumListItem extends React.PureComponent<IForumListItemProps> {
-  private tagsGenerator(tags: string[]) {
-    // return map(tags, (tag, index) => {
-    //   return <Tag text={tag} key={`tag_${index}`} color="orange" />;
-    // });
+  constructor(props: IForumListItemProps) {
+    super(props);
 
+    this.handleRedirectToQuestion = this.handleRedirectToQuestion.bind(this);
+  }
+
+  private readonly cardStyle = {
+    width: "600px",
+    padding: "0 20px !important",
+    marginBottom: "20px",
+  };
+
+  private handleRedirectToQuestion() {
+    const { id, history } = this.props;
+
+    history.push(`/question/${id}`);
+  }
+
+  private tagsGenerator(tags: string[] | undefined) {
+    const spheresWithKeyNames = keyBy(spheres, (elem) => elem.value);
     return (
       <div>
         {map(tags, (tag, index) => {
-          return <Tag text={tag} key={`tag_${index}`} color="orange" />;
+          const currentSphereData = find(
+            spheresWithKeyNames,
+            (elem) => elem.value === tag,
+          );
+          return (
+            <Tag
+              text={tag}
+              key={`tag_${index}`}
+              color={currentSphereData?.color}
+            />
+          );
         })}
       </div>
     );
@@ -27,17 +54,23 @@ class ForumListItem extends React.PureComponent<IForumListItemProps> {
     const tagsTest = ["Спорт", "Наука", "IT"];
 
     return (
-      <Row className={"forum-list-item-style"}>
-        <Col className={"forum-list-item-avatar-col-style"}>
-          <Avatar icon={<UserOutlined />} />
-        </Col>
-        <Col className={"forum-list-item-data-col-style"}>
-          <span>{question}</span>
-          <div>{this.tagsGenerator(tagsTest)}</div>
-        </Col>
-      </Row>
+      <Card
+        style={this.cardStyle}
+        className={"forum-list-item-style"}
+        onClick={this.handleRedirectToQuestion}
+      >
+        <Row>
+          <Col className={"forum-list-item-avatar-col-style"}>
+            <Avatar icon={<UserOutlined />} />
+          </Col>
+          <Col className={"forum-list-item-data-col-style"}>
+            <span>{question}</span>
+            <div>{this.tagsGenerator(tags)}</div>
+          </Col>
+        </Row>
+      </Card>
     );
   }
 }
 
-export default ForumListItem;
+export default withRouter(ForumListItem);

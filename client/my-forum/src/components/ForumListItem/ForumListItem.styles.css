@@ -1,7 +1,9 @@
 .forum-list-item-style {
-  width: 800px;
-  border: 1px solid black;
-  padding: 0 20px;
+  padding: 0px !important;
+}
+
+.forum-list-item-style:hover {
+  cursor: pointer;
 }
 
 .forum-list-item-avatar-col-style {

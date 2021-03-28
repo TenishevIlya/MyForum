@@ -1,0 +1,11 @@
+.add-question-form {
+  width: 700px;
+  height: 100%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  padding: 10px 20px !important;
+  border-radius: 2px;
+}
+
+.add-question-form-header {
+  text-align: center;
+}

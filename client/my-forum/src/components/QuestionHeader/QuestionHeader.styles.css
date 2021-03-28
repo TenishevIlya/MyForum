@@ -1,0 +1,13 @@
+.list-item-style {
+  display: inline;
+  margin-right: 10px;
+}
+
+.list-item-date-style {
+  font-weight: bold;
+}
+
+.list-style {
+  margin-left: 0;
+  margin-left: -40px;
+}

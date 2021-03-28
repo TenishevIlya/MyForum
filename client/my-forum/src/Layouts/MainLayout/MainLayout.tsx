@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Space } from "antd";
+import { PageHeader } from "antd";
 import "./MainLayout.style.css";
 import LogInPanel from "../../containers/LogInPanel/LogInPanel";
 import LinksPanel from "../../containers/LinksPanel/LinksPanel";
@@ -9,6 +9,7 @@ class MainLayout extends React.PureComponent {
   private readonly layoutLinks: TLinkItem[] = [
     { text: "Разделы", path: "/sections" },
     { text: "Пользователи", path: "/users" },
+    { text: "Задать вопрос", path: "/addQuestion" },
   ];
 
   render() {
@@ -20,9 +21,7 @@ class MainLayout extends React.PureComponent {
           extra={[<LogInPanel />]}
           subTitle={<LinksPanel items={this.layoutLinks} />}
         />
-        <Space direction="horizontal" className={"main-layout-style"}>
-          {this.props.children}
-        </Space>
+        <main className={"main-layout-style"}>{this.props.children}</main>
       </>
     );
   }

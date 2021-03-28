@@ -4,7 +4,7 @@ import Button from "../../components/Button/Button";
 const LogInPanel: React.FC = () => {
   return (
     <>
-      <Button text={"Войти"} />
+      <Button key="btn" text={"Войти"} />
     </>
   );
 };
