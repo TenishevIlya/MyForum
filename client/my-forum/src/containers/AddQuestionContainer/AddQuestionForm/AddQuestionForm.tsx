@@ -1,4 +1,4 @@
-import { PureComponent } from "react";
+import React from "react";
 import { Form, Input, Select, Tag, Upload } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import { spheres } from "../../../const";
@@ -27,9 +27,13 @@ export const FormItemsNames = {
   submitBtn: "submitBtn",
 } as const;
 
-class AddQuestionForm extends PureComponent<IAddQuestionFormProps> {
+class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
+  private formRef: any;
+
   constructor(props: IAddQuestionFormProps) {
     super(props);
+
+    this.formRef = React.createRef();
 
     this.handleOnFinish = this.handleOnFinish.bind(this);
   }
@@ -82,6 +86,7 @@ class AddQuestionForm extends PureComponent<IAddQuestionFormProps> {
 
   // функция отправки данных для создания вопроса
   private handleOnFinish(values: IFormValues) {
+    // console.log(this.formRef.current.submit());
     const postData = {
       title: values.questionTitle,
       explanation: values.questionExplanation,
@@ -92,7 +97,6 @@ class AddQuestionForm extends PureComponent<IAddQuestionFormProps> {
       pictures: values.questionPictures,
     };
     createPostRequest({
-      // url: "http://localhost:40000/addQuestion",
       url: "http://localhost:4000/addQuestion",
       values: postData,
     });
@@ -110,6 +114,7 @@ class AddQuestionForm extends PureComponent<IAddQuestionFormProps> {
           key={this.ComponentKeys.formKey}
           onFinish={this.handleOnFinish}
           initialValues={{ questionTags: [spheres[0].value] }}
+          encType="multipart/form-data"
         >
           <Form.Item
             label={this.FormLabels.question}
@@ -139,18 +144,37 @@ class AddQuestionForm extends PureComponent<IAddQuestionFormProps> {
               required
             />
           </Form.Item>
-          <Form.Item
-            {...this.tailLayout}
-            name={FormItemsNames.questionPictures}
+          {/* <form
+            action="http://localhost:4000/addQuestion"
+            encType="multipart/form-data"
+            method="post"
+            ref={this.formRef}
           >
-            <Upload>
-              <Button text={"Загрузите фото"} icon={<UploadOutlined />} />
-            </Upload>
-          </Form.Item>
+            <div>
+              <input type="file" name="test" />
+            </div>
+          </form> */}
+
           <Form.Item {...this.tailLayout} name={FormItemsNames.submitBtn}>
             <Button text="Отправить" type={"primary"} htmlType={"submit"} />
           </Form.Item>
         </Form>
+
+        {/* <form
+          action="http://localhost:4000/test"
+          encType="multipart/form-data"
+          method="post"
+        >
+          <div>
+            <input type="file" name="test" />
+            <input
+              type="text"
+              placeholder="Number of speakers"
+              name="nspeakers"
+            />
+            <input type="submit" value="Get me the stats!" />
+          </div>
+        </form> */}
       </div>
     );
   }

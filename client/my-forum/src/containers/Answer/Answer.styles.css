@@ -1,0 +1,28 @@
+.answer-container-styles {
+  display: flex;
+  border: 1px solid black;
+  margin-bottom: 20px;
+  /* align-items: center; */
+  width: 50%;
+  position: relative;
+}
+
+.answer-avatar-block-styles {
+  display: flex;
+  align-items: center;
+}
+
+.divider-styles {
+  height: 100% !important;
+}
+
+.creation-time-styles {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  font-size: 12px;
+}
+
+.explanation-container-styles {
+  width: calc(100% - 70px);
+}
