@@ -6,6 +6,7 @@ import bodyParser from "body-parser";
 import { preparedQuestionData } from "./src/features.js";
 import multer from "multer";
 import path from "path";
+import { authorize, registrate } from "./src/authorization.js";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -31,7 +32,7 @@ app.use(express.static(__dirname));
 
 var upload = multer({ storage: storage });
 
-const Connection = mysql
+export const Connection = mysql
   .createConnection({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -103,5 +104,8 @@ app.post("/addAnswer", (req, res) => {
     res.status(201).json(result);
   });
 });
+
+app.post("/registrate", registrate);
+app.get("/authorize", authorize);
 
 app.listen(process.env.PORT, () => console.log("Server is running"));

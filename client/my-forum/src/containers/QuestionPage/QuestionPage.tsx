@@ -95,6 +95,7 @@ class QuestionPage extends React.PureComponent<
           key={this.ComponentKeys.formKey}
           name={this.ComponentKeys.formName}
           ref={this.formRef}
+          layout={"vertical"}
         >
           <Form.Item
             label={this.FormLabels.answer}

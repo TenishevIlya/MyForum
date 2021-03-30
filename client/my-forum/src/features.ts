@@ -1,7 +1,7 @@
 import type { IRequestData } from "./utils/types";
 
 // функция для генерации POST-запросов
-export const createPostRequest = (requestData: IRequestData) => {
+export const createPostRequest = <T>(requestData: IRequestData<T>) => {
   const { url, values } = requestData;
 
   return fetch(url, {
@@ -14,6 +14,21 @@ export const createPostRequest = (requestData: IRequestData) => {
     .catch((err) => err)
     .then((res) => {
       return res.json();
+    });
+};
+
+export const createGetRequest = <T>(requestData: IRequestData<T>) => {
+  const { url, values, callBack } = requestData;
+
+  return fetch(url, {
+    headers: { ...values } as any,
+  })
+    .catch((err) => err)
+    .then((res) => {
+      return res.json();
+    })
+    .then((data) => {
+      callBack && callBack(data);
     });
 };
 

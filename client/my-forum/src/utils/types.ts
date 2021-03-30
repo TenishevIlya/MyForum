@@ -13,9 +13,16 @@ export type TQuestionParameters = {
   explanation?: string;
 };
 
-export interface IRequestData {
+export interface IRequestData<T> {
   url: string;
-  values: TQuestionParameters;
+  values: T;
+  callBack?(data?: any): void;
 }
 
 export type TStatus = "OPENED" | "CLOSED";
+
+export type TAuthorize = {
+  email: string;
+  password: string;
+  passwordRepeat: string;
+};

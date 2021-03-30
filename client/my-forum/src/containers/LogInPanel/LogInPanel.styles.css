@@ -1,0 +1,14 @@
+.modal-footer-style {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+.create-account-text {
+  cursor: pointer;
+  color: cadetblue;
+}
+
+.drawer-footer-styles {
+  text-align: right;
+}

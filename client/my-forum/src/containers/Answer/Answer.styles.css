@@ -1,6 +1,6 @@
 .answer-container-styles {
   display: flex;
-  border: 1px solid black;
+  /* border: 1px solid black; */
   margin-bottom: 20px;
   /* align-items: center; */
   width: 50%;

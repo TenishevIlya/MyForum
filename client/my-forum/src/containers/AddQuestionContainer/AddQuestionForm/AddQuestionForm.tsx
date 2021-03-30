@@ -12,6 +12,7 @@ import type {
 } from "./AddQuestionForm.types";
 import { map } from "lodash";
 import { withRouter } from "react-router";
+import type { TQuestionParameters } from "../../../utils/types";
 
 // библотека для работы со временем
 import moment from "moment";
@@ -52,16 +53,6 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
     formKey: "addFormKey",
   };
 
-  // стили для расположения кнопки
-  private readonly tailLayout = {
-    wrapperCol: { offset: 2, span: 2 },
-  };
-
-  // стили для расположения элементов формы
-  private readonly layout = {
-    labelCol: { span: 2 },
-  };
-
   // метод рендеринга тегов внутри выпадающего списка
   private tagRenderer(props: any): React.ReactElement {
     const { label, value, onClose } = props;
@@ -96,7 +87,7 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
       popularityIndex: 0,
       pictures: values.questionPictures,
     };
-    createPostRequest({
+    createPostRequest<TQuestionParameters>({
       url: "http://localhost:4000/addQuestion",
       values: postData,
     });
@@ -109,12 +100,12 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
           {"Задайте свой вопрос здесь"}
         </h3>
         <Form
-          {...this.layout}
           name={this.ComponentKeys.formName}
           key={this.ComponentKeys.formKey}
           onFinish={this.handleOnFinish}
           initialValues={{ questionTags: [spheres[0].value] }}
           encType="multipart/form-data"
+          layout={"vertical"}
         >
           <Form.Item
             label={this.FormLabels.question}
@@ -155,8 +146,13 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
             </div>
           </form> */}
 
-          <Form.Item {...this.tailLayout} name={FormItemsNames.submitBtn}>
-            <Button text="Отправить" type={"primary"} htmlType={"submit"} />
+          <Form.Item name={FormItemsNames.submitBtn}>
+            <Button
+              text="Отправить"
+              type={"primary"}
+              htmlType={"submit"}
+              block
+            />
           </Form.Item>
         </Form>
 
