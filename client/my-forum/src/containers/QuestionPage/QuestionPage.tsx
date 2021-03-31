@@ -7,11 +7,13 @@ import Spinner from "../../components/Spinner/Spinner";
 import { Divider } from "antd";
 import { timestampToMilliseconds } from "../../features";
 import Button from "../../components/Button/Button";
-import { Modal, Form, Input } from "antd";
+import { Modal, Form, Input, message } from "antd";
 import { createPostRequest } from "../../features";
 import Answer from "../Answer/Answer";
 import { map } from "lodash";
 import moment from "moment";
+import { store } from "../../store/store";
+import { isEmpty } from "lodash";
 
 const { TextArea } = Input;
 
@@ -53,6 +55,12 @@ class QuestionPage extends React.PureComponent<
     questionAnswers: null,
   } as IQuestionPageState;
 
+  private logInMessage() {
+    return message.error(
+      "Для того, чтобы ответить на вопрос необоходимо авторизоваться",
+    );
+  }
+
   public componentDidMount() {
     fetch(`http://localhost:4000/question/${this.questionId}`)
       .then((res) => res.json())
@@ -60,9 +68,21 @@ class QuestionPage extends React.PureComponent<
     fetch(`http://localhost:4000/question/answers/${this.questionId}`)
       .then((res) => res.json())
       .then((answers) => this.setState({ questionAnswers: answers }));
+    fetch(
+      `http://localhost:4000/question/updatePopularity/${this.questionId}`,
+      {
+        method: "PUT",
+        cache: "reload",
+      },
+    )
+      .then((res) => res.json())
+      .then((data) => data);
   }
 
   private handleModalOpen() {
+    if (isEmpty(store.getState().personReducer)) {
+      return this.logInMessage();
+    }
     this.setState({ showAddAnswerModal: !this.state.showAddAnswerModal });
   }
 
@@ -71,11 +91,15 @@ class QuestionPage extends React.PureComponent<
       ...this.formRef.current.getFieldsValue(),
       questionId: this.questionId,
       creationDate: moment().unix() + 60 * moment().utcOffset(),
+      userId: store.getState().personReducer[0].id,
     };
     createPostRequest({
       url: "http://localhost:4000/addAnswer",
       values: postData,
     });
+    fetch(`http://localhost:4000/question/answers/${this.questionId}`)
+      .then((res) => res.json())
+      .then((answers) => this.setState({ questionAnswers: answers }));
     this.handleModalOpen();
   }
 
@@ -126,7 +150,7 @@ class QuestionPage extends React.PureComponent<
       <>
         <QuestionHeader
           title={questionData.title}
-          timesViewed={0}
+          timesViewed={questionData.popularityIndex}
           creationDateTimestamp={timestampToMilliseconds(
             questionData.creationDate,
           )}

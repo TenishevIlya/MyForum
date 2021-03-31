@@ -48,7 +48,9 @@ Connection.connect((err) => {
 });
 
 app.get("/", (req, res) => {
-  Connection.query(`SELECT * FROM questions`).then((result) => {
+  Connection.query(
+    `SELECT * FROM questions ORDER BY questions.popularity_index DESC`,
+  ).then((result) => {
     const models = result[0].map((row) => {
       return preparedQuestionData(row);
     });
@@ -67,7 +69,7 @@ app.get("/question/:id", (req, res) => {
 
 app.get("/question/answers/:id", (req, res) => {
   Connection.query(
-    `SELECT * FROM answers WHERE question_id=${req.params.id}`,
+    `SELECT answers.id, answers.question_id, answers.explanation, answers.picture_url, answers.answer_author_id, answers.creation_date, users.id, users.email FROM answers INNER JOIN users ON answers.answer_author_id=users.id WHERE question_id=${req.params.id}`,
   ).then((result) => {
     res.status(200).json(result[0]);
   });
@@ -86,8 +88,6 @@ app.post("/addQuestion", upload.single("test"), (req, res) => {
     pictures,
   } = req.body;
 
-  // console.log(req.body, req.file);
-
   Connection.query(
     `INSERT INTO questions(title, tags, popularity_index, creation_date, status, explanation) VALUES ("${title}", "${tags.join()}", ${popularityIndex}, ${creationDate}, "${status}", "${explanation}")`,
   ).then((result) => {
@@ -96,12 +96,20 @@ app.post("/addQuestion", upload.single("test"), (req, res) => {
 });
 
 app.post("/addAnswer", (req, res) => {
-  const { answerExplanation, questionId, creationDate } = req.body;
+  const { answerExplanation, questionId, creationDate, userId } = req.body;
 
   Connection.query(
-    `INSERT INTO answers(question_id, explanation, answer_author_id, creation_date) VALUES ("${questionId}", "${answerExplanation}", 1, "${creationDate}")`,
+    `INSERT INTO answers(question_id, explanation, answer_author_id, creation_date) VALUES ("${questionId}", "${answerExplanation}", ${userId}, "${creationDate}")`,
   ).then((result) => {
     res.status(201).json(result);
+  });
+});
+
+app.put("/question/updatePopularity/:id", (req, res) => {
+  Connection.query(
+    `UPDATE questions SET popularity_index=popularity_index+1 WHERE id=${req.params.id}`,
+  ).then((result) => {
+    res.status(200).json(result[0]);
   });
 });
 

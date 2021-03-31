@@ -26,3 +26,7 @@
 .explanation-container-styles {
   width: calc(100% - 70px);
 }
+
+.answer-author-styles {
+  color: #0077cc;
+}

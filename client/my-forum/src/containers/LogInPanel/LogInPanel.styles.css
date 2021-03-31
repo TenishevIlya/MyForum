@@ -12,3 +12,7 @@
 .drawer-footer-styles {
   text-align: right;
 }
+
+.failed-form-message-styles {
+  background-color: "#ff4d4f";
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader } from "antd";
+import { PageHeader, Avatar } from "antd";
 import "./MainLayout.style.css";
 import LogInPanel from "../../containers/LogInPanel/LogInPanel";
 import LinksPanel from "../../containers/LinksPanel/LinksPanel";

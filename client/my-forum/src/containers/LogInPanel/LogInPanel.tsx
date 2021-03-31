@@ -5,7 +5,10 @@ import { createPostRequest, createGetRequest } from "../../features";
 import "./LogInPanel.styles.css";
 import type { TAuthorize } from "../../utils/types";
 import { useDispatch } from "react-redux";
-import { logInUser } from "../../store/actions";
+import { logInUser, logOffUser } from "../../store/actions";
+import { store } from "../../store/store";
+import { eq } from "lodash";
+import { Avatar } from "../../components/Avatar/Avatar";
 
 const { Password } = Input;
 
@@ -28,6 +31,8 @@ const FormItemsNames = {
 const LogInPanel: React.FC = () => {
   const [isModalOpened, setModalOpened] = useState(false);
   const [isDrawerOpened, setDrawerOpened] = useState(false);
+  const [isUserAuthorized, setUserAuthorized] = useState(false);
+  const [isFormFailed, setFormFailed] = useState(false);
   const modalFormRef = useRef({} as any);
   const drawerFormRef = useRef({} as any);
   const dispatch = useDispatch();
@@ -36,11 +41,15 @@ const LogInPanel: React.FC = () => {
     createGetRequest<TAuthorize>({
       url: "http://localhost:4000/authorize",
       values: modalFormRef.current.getFieldsValue(),
-      callBack: test,
+      callBack: setUser,
     });
   };
 
-  const test = (data: any) => dispatch(logInUser(data));
+  const setUser = (data: any) => dispatch(logInUser(data));
+  const unSetUser = () => {
+    dispatch(logOffUser());
+    setFormFailed(false);
+  };
 
   const handleDrawerSubmit = () => {
     console.log(drawerFormRef.current.getFieldsValue());
@@ -68,16 +77,16 @@ const LogInPanel: React.FC = () => {
         layout={"vertical"}
       >
         <Form.Item label={FormLabels.email} name={FormItemsNames.email}>
-          <Input />
+          <Input placeholder={"Введите логин"} />
         </Form.Item>
         <Form.Item label={FormLabels.password} name={FormItemsNames.password}>
-          <Password />
+          <Password placeholder={"Введите пароль"} />
         </Form.Item>
         <Form.Item
           label={FormLabels.passwordRepeat}
           name={FormItemsNames.passwordRepeat}
         >
-          <Password />
+          <Password placeholder={"Пвторите пароль"} />
         </Form.Item>
       </Form>
     );
@@ -138,7 +147,6 @@ const LogInPanel: React.FC = () => {
       <Modal
         title={"Введите ваши данные"}
         visible={isModalOpened}
-        // onOk={handleModalSubmit}
         onCancel={handleModal}
         okText={"Войти"}
         cancelText={"Отменить"}
@@ -150,18 +158,52 @@ const LogInPanel: React.FC = () => {
           ref={modalFormRef}
           layout={"vertical"}
         >
-          <Form.Item label={FormLabels.email} name={FormItemsNames.email}>
-            <Input />
+          <Form.Item
+            label={FormLabels.email}
+            name={FormItemsNames.email}
+            validateStatus={isFormFailed ? "error" : undefined}
+          >
+            <Input
+              placeholder={"Введите логин"}
+              onChange={() => setFormFailed(false)}
+            />
           </Form.Item>
-          <Form.Item label={FormLabels.password} name={FormItemsNames.password}>
-            <Password />
+          <Form.Item
+            label={FormLabels.password}
+            name={FormItemsNames.password}
+            validateStatus={isFormFailed ? "error" : undefined}
+          >
+            <Password
+              placeholder={"Введите пароль"}
+              onChange={() => setFormFailed(false)}
+            />
           </Form.Item>
+          {isFormFailed && (
+            <span className={"failed-form-message-styles"}>
+              {"Неверный логин или пароль"}
+            </span>
+          )}
         </Form>
       </Modal>
     );
-  }, [isModalOpened, handleModal, renderModalFooter]);
+  }, [isModalOpened, handleModal, renderModalFooter, isFormFailed]);
 
-  return (
+  store.subscribe(() => {
+    if (!eq(store.getState().personReducer.length, 0)) {
+      setUserAuthorized(true);
+      handleModal();
+    } else {
+      setFormFailed(true);
+      setUserAuthorized(false);
+    }
+  });
+
+  return isUserAuthorized ? (
+    <div style={{ display: "flex", alignItems: "center" }}>
+      <Avatar />
+      <Button text={"Выйти"} onClick={unSetUser} />
+    </div>
+  ) : (
     <>
       <Button key="btn" text={"Войти"} onClick={handleModal} />
       {renderModal}

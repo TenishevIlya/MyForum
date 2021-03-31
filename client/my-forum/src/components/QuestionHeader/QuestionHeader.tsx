@@ -23,7 +23,9 @@ const QuestionHeader: FC<IQuestionHeaderProps> = ({
         </li>
         <li className={"list-item-style"}>
           <span>{"Просмотрен: "}</span>
-          <span className={"list-item-date-style"}>{`${timesViewed} раз`}</span>
+          <span
+            className={"list-item-date-style"}
+          >{`${timesViewed} раз(-а)`}</span>
         </li>
       </ul>
     </div>

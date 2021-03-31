@@ -12,8 +12,8 @@ import { Provider } from "react-redux";
 import { store } from "./store/store";
 
 ReactDOM.render(
-  <React.StrictMode>
-    <Provider store={store}>
+  <Provider store={store}>
+    <React.StrictMode>
       <Router>
         <Switch>
           <MainLayout>
@@ -32,7 +32,7 @@ ReactDOM.render(
           </MainLayout>
         </Switch>
       </Router>
-    </Provider>
-  </React.StrictMode>,
+    </React.StrictMode>
+  </Provider>,
   document.getElementById("root"),
 );

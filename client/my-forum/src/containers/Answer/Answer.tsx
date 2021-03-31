@@ -1,9 +1,10 @@
 import { PureComponent } from "react";
 import { IAnswerTypesProps } from "./Answer.types";
-import { Divider, Avatar } from "antd";
+import { Divider } from "antd";
 import "./Answer.styles.css";
 import { timestampToMilliseconds } from "../../features";
 import moment from "moment";
+import { Avatar } from "../../components/Avatar/Avatar";
 
 class Answer extends PureComponent<IAnswerTypesProps> {
   render() {
@@ -19,6 +20,10 @@ class Answer extends PureComponent<IAnswerTypesProps> {
           <Divider type={"vertical"} className={"divider-styles"} />
           {answerData.explanation}
           <span className={"creation-time-styles"}>
+            <span className={"answer-author-styles"}>
+              {answerData.email}
+              {", "}
+            </span>
             {moment(
               timestampToMilliseconds(answerData.creation_date),
             ).fromNow()}
