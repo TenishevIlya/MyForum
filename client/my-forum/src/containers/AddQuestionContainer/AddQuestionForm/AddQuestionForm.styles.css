@@ -9,3 +9,7 @@
 .add-question-form-header {
   text-align: center;
 }
+
+.textarea-styles {
+  height: 100px;
+}

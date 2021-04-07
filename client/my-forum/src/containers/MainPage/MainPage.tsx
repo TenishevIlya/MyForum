@@ -1,7 +1,7 @@
 import React from "react";
 import ForumListItem from "../../components/ForumListItem/ForumListItem";
 import { IMainPageState, IMainPageProps } from "./MainPage.types";
-import { forEach, map } from "lodash";
+import { map } from "lodash";
 import { keyGenerator } from "../../features";
 import "./MainPage.styles.css";
 

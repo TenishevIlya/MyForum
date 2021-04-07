@@ -11,3 +11,8 @@
   margin-left: 0;
   margin-left: -40px;
 }
+
+.question-header-style {
+  display: flex;
+  justify-content: space-between;
+}

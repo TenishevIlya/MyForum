@@ -7,4 +7,5 @@ export type TAnswerData = {
   authorName?: string;
   creation_date: number;
   email?: string;
+  picture_url: string[] | undefined;
 };

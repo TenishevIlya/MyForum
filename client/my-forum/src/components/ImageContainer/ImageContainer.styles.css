@@ -1,0 +1,12 @@
+.image-container-horizontal-styles {
+  display: flex;
+}
+
+.image-container-vertical-styles {
+  display: flex;
+  flex-direction: column;
+}
+
+.image-block-style {
+  margin-right: 15px;
+}

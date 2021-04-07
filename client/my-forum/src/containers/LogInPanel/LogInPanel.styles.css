@@ -16,3 +16,7 @@
 .failed-form-message-styles {
   background-color: "#ff4d4f";
 }
+
+.avatar-styles {
+  cursor: pointer;
+}

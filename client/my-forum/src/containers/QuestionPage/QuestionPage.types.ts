@@ -1,5 +1,5 @@
-import { RouteComponentProps } from "react-router";
-import { TMatchParams, TQuestionParameters } from "../../utils/types";
+import type { RouteComponentProps } from "react-router";
+import type { TMatchParams, TQuestionParameters } from "../../utils/types";
 
 export interface IQuestionPageProps extends RouteComponentProps<TMatchParams> {}
 

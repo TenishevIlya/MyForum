@@ -4,12 +4,13 @@ export type TMatchParams = {
 
 export type TQuestionParameters = {
   id?: number;
+  questionId: string;
   title: string;
   tags: string[];
   creationDate: number;
   status: TStatus;
   popularityIndex: number;
-  pictureUrl?: string;
+  pictureUrl?: string[];
   explanation?: string;
 };
 
@@ -17,6 +18,7 @@ export interface IRequestData<T> {
   url: string;
   values: T;
   callBack?(data?: any): void;
+  contentType?: string;
 }
 
 export type TStatus = "OPENED" | "CLOSED";

@@ -2,13 +2,14 @@ import type { IRequestData } from "./utils/types";
 
 // функция для генерации POST-запросов
 export const createPostRequest = <T>(requestData: IRequestData<T>) => {
-  const { url, values } = requestData;
+  const { url, values, contentType = "application/json" } = requestData;
 
   return fetch(url, {
     method: "POST",
     body: JSON.stringify(values),
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": `${contentType}`,
+      // "Content-Type": "multipart/form-data; boundary=asdasasd",
     },
   })
     .catch((err) => err)

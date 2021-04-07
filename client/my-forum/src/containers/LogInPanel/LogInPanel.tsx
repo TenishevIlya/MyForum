@@ -1,29 +1,34 @@
 import React, { useMemo, useState, useCallback, useRef } from "react";
 import Button from "../../components/Button/Button";
-import { Form, Modal, Input, Drawer } from "antd";
+import { Form, Modal, Input, Drawer, message } from "antd";
 import { createPostRequest, createGetRequest } from "../../features";
 import "./LogInPanel.styles.css";
 import type { TAuthorize } from "../../utils/types";
 import { useDispatch } from "react-redux";
 import { logInUser, logOffUser } from "../../store/actions";
 import { store } from "../../store/store";
-import { eq } from "lodash";
+import { eq, isUndefined } from "lodash";
 import { Avatar } from "../../components/Avatar/Avatar";
+import { useHistory } from "react-router-dom";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 const { Password } = Input;
+const { confirm } = Modal;
 
 const ComponentKeys = {
   form: "logInForm",
 };
 
 const FormLabels = {
-  email: "Логин",
+  email: "Адрес электронной почты",
+  name: "Имя",
   password: "Пароль",
   passwordRepeat: "Повторите пароль",
 };
 
 const FormItemsNames = {
   email: "email",
+  name: "name",
   password: "password",
   passwordRepeat: "passwordRepeat",
 };
@@ -36,13 +41,31 @@ const LogInPanel: React.FC = () => {
   const modalFormRef = useRef({} as any);
   const drawerFormRef = useRef({} as any);
   const dispatch = useDispatch();
+  const history = useHistory();
+  const [authForm] = Form.useForm();
+  const [registrateForm] = Form.useForm();
+
+  const successMessageOnLogIn = () => {
+    message.success("Вы успешно зашли в свой профиль");
+  };
 
   const handleModalSubmit = () => {
-    createGetRequest<TAuthorize>({
-      url: "http://localhost:4000/authorize",
-      values: modalFormRef.current.getFieldsValue(),
-      callBack: setUser,
-    });
+    authForm
+      .validateFields()
+      .catch((err) => err)
+      .then((err) => {
+        if (!err.errorFields) {
+          createGetRequest<TAuthorize>({
+            url: "http://localhost:4000/authorize",
+            values: modalFormRef.current.getFieldsValue(),
+            callBack: setUser,
+          }).then(() => {
+            if (!isUndefined(store.getState().personReducer[0])) {
+              successMessageOnLogIn();
+            }
+          });
+        }
+      });
   };
 
   const setUser = (data: any) => dispatch(logInUser(data));
@@ -52,20 +75,39 @@ const LogInPanel: React.FC = () => {
   };
 
   const handleDrawerSubmit = () => {
-    console.log(drawerFormRef.current.getFieldsValue());
-    createPostRequest({
-      url: "http://localhost:4000/registrate",
-      values: drawerFormRef.current.getFieldsValue(),
-    });
+    registrateForm
+      .validateFields()
+      .catch((err) => {
+        return err;
+      })
+      .then((err) => {
+        if (!err.errorFields) {
+          createPostRequest({
+            url: "http://localhost:4000/registrate",
+            values: drawerFormRef.current.getFieldsValue(),
+          }).then((res) => {
+            if (eq(res.notUniq, true)) {
+              setFormFailed(true);
+            } else {
+              registrateForm.resetFields();
+              setFormFailed(false);
+              handleDrawer();
+            }
+          });
+        }
+      });
   };
 
-  const handleModal = useCallback(() => setModalOpened(!isModalOpened), [
-    isModalOpened,
-  ]);
+  const handleModal = useCallback(() => {
+    setModalOpened(!isModalOpened);
+    setFormFailed(false);
+    authForm.resetFields();
+  }, [isModalOpened, authForm]);
 
   const handleDrawer = useCallback(() => {
     setDrawerOpened(!isDrawerOpened);
     setModalOpened(false);
+    registrateForm.resetFields();
   }, [isDrawerOpened]);
 
   const drawerForm = useCallback(() => {
@@ -75,22 +117,57 @@ const LogInPanel: React.FC = () => {
         name={ComponentKeys.form}
         ref={drawerFormRef}
         layout={"vertical"}
+        form={registrateForm}
       >
-        <Form.Item label={FormLabels.email} name={FormItemsNames.email}>
-          <Input placeholder={"Введите логин"} />
+        <Form.Item
+          label={FormLabels.email}
+          name={FormItemsNames.email}
+          rules={[
+            {
+              type: "email",
+              required: true,
+              message: "Некорректный формат электронной почты",
+            },
+          ]}
+        >
+          <Input
+            placeholder={"Введите логин"}
+            onChange={() => setFormFailed(false)}
+          />
         </Form.Item>
-        <Form.Item label={FormLabels.password} name={FormItemsNames.password}>
-          <Password placeholder={"Введите пароль"} />
+        <Form.Item
+          label={FormLabels.name}
+          name={FormItemsNames.name}
+          rules={[
+            {
+              required: true,
+              message: "Поле обязательно к заполнению",
+            },
+          ]}
+        >
+          <Password
+            placeholder={"Введите пароль"}
+            onChange={() => setFormFailed(false)}
+          />
         </Form.Item>
         <Form.Item
           label={FormLabels.passwordRepeat}
           name={FormItemsNames.passwordRepeat}
+          rules={[{ required: true, message: "Поле обязательно к заполнению" }]}
         >
-          <Password placeholder={"Пвторите пароль"} />
+          <Password
+            placeholder={"Повторите пароль"}
+            onChange={() => setFormFailed(false)}
+          />
         </Form.Item>
+        {isFormFailed && (
+          <span className={"failed-form-message-styles"}>
+            {"Пользователь с таким email уже существует"}
+          </span>
+        )}
       </Form>
     );
-  }, []);
+  }, [isFormFailed]);
 
   const renderDrawerFooter = useMemo(() => {
     return (
@@ -157,11 +234,19 @@ const LogInPanel: React.FC = () => {
           name={ComponentKeys.form}
           ref={modalFormRef}
           layout={"vertical"}
+          form={authForm}
         >
           <Form.Item
             label={FormLabels.email}
             name={FormItemsNames.email}
             validateStatus={isFormFailed ? "error" : undefined}
+            rules={[
+              {
+                type: "email",
+                required: true,
+                message: "Некорректный формат электронной почты",
+              },
+            ]}
           >
             <Input
               placeholder={"Введите логин"}
@@ -172,6 +257,28 @@ const LogInPanel: React.FC = () => {
             label={FormLabels.password}
             name={FormItemsNames.password}
             validateStatus={isFormFailed ? "error" : undefined}
+            rules={[
+              {
+                required: true,
+                message: "Поле обязательно к заполнению",
+              },
+            ]}
+          >
+            <Password
+              placeholder={"Введите пароль"}
+              onChange={() => setFormFailed(false)}
+            />
+          </Form.Item>
+          <Form.Item
+            label={FormLabels.password}
+            name={FormItemsNames.password}
+            validateStatus={isFormFailed ? "error" : undefined}
+            rules={[
+              {
+                required: true,
+                message: "Поле обязательно к заполнению",
+              },
+            ]}
           >
             <Password
               placeholder={"Введите пароль"}
@@ -198,10 +305,26 @@ const LogInPanel: React.FC = () => {
     }
   });
 
+  const linkToProfile = () => history.push("/user");
+
+  const showConfirm = () => {
+    return confirm({
+      title: "Вы действительно хотите выйти из профиля?",
+      icon: <ExclamationCircleOutlined />,
+      okText: "Да",
+      cancelText: "Отмена",
+      onOk() {
+        unSetUser();
+      },
+    });
+  };
+
   return isUserAuthorized ? (
     <div style={{ display: "flex", alignItems: "center" }}>
-      <Avatar />
-      <Button text={"Выйти"} onClick={unSetUser} />
+      <div onClick={linkToProfile} className={"avatar-styles"}>
+        <Avatar />
+      </div>
+      <Button text={"Выйти"} onClick={showConfirm} />
     </div>
   ) : (
     <>

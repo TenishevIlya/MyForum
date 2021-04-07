@@ -5,4 +5,5 @@ export interface ILinksPanelProps {
 export type TLinkItem = {
   text: string;
   path: string;
+  needLogIn: boolean;
 };

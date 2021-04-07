@@ -1,5 +1,5 @@
 import React from "react";
-import { PageHeader, Avatar } from "antd";
+import { PageHeader } from "antd";
 import "./MainLayout.style.css";
 import LogInPanel from "../../containers/LogInPanel/LogInPanel";
 import LinksPanel from "../../containers/LinksPanel/LinksPanel";
@@ -7,9 +7,9 @@ import { TLinkItem } from "../../containers/LinksPanel/LinksPanel.types";
 
 class MainLayout extends React.PureComponent {
   private readonly layoutLinks: TLinkItem[] = [
-    { text: "Разделы", path: "/sections" },
-    { text: "Пользователи", path: "/users" },
-    { text: "Задать вопрос", path: "/addQuestion" },
+    { text: "Разделы", path: "/sections", needLogIn: false },
+    { text: "Пользователи", path: "/users", needLogIn: false },
+    { text: "Задать вопрос", path: "/addQuestion", needLogIn: true },
   ];
 
   render() {

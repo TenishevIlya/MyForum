@@ -5,6 +5,7 @@ import "./Answer.styles.css";
 import { timestampToMilliseconds } from "../../features";
 import moment from "moment";
 import { Avatar } from "../../components/Avatar/Avatar";
+import ImageContainer from "../../components/ImageContainer/ImageConatiner";
 
 class Answer extends PureComponent<IAnswerTypesProps> {
   render() {
@@ -14,20 +15,25 @@ class Answer extends PureComponent<IAnswerTypesProps> {
       <section className={"answer-container-styles"}>
         <div className={"answer-avatar-block-styles"}>
           <Avatar size={60} />
-          {/* <Divider type={"vertical"} /> */}
         </div>
         <div className={"explanation-container-styles"}>
           <Divider type={"vertical"} className={"divider-styles"} />
-          {answerData.explanation}
-          <span className={"creation-time-styles"}>
-            <span className={"answer-author-styles"}>
-              {answerData.email}
-              {", "}
+          <div>
+            <span>{answerData.explanation}</span>
+            <span className={"creation-time-styles"}>
+              <span className={"answer-author-styles"}>
+                {answerData.email}
+                {", "}
+              </span>
+              {moment(
+                timestampToMilliseconds(answerData.creation_date),
+              ).fromNow()}
             </span>
-            {moment(
-              timestampToMilliseconds(answerData.creation_date),
-            ).fromNow()}
-          </span>
+            <ImageContainer
+              direction={"vertical"}
+              imagesPaths={answerData.picture_url}
+            />
+          </div>
         </div>
       </section>
     );

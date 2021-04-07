@@ -1,6 +1,5 @@
 import React from "react";
-import { Form, Input, Select, Tag, Upload } from "antd";
-import { UploadOutlined } from "@ant-design/icons";
+import { Form, Input, Select, Tag, message } from "antd";
 import { spheres } from "../../../const";
 import { createPostRequest, keyGenerator } from "../../../features";
 import type { TStatus } from "../../../utils/types";
@@ -13,6 +12,7 @@ import type {
 import { map } from "lodash";
 import { withRouter } from "react-router";
 import type { TQuestionParameters } from "../../../utils/types";
+import { v4 } from "uuid";
 
 // библотека для работы со временем
 import moment from "moment";
@@ -30,11 +30,15 @@ export const FormItemsNames = {
 
 class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
   private formRef: any;
+  private imageFormRef: any;
+
+  private readonly questionUUID = v4();
 
   constructor(props: IAddQuestionFormProps) {
     super(props);
 
     this.formRef = React.createRef();
+    this.imageFormRef = React.createRef();
 
     this.handleOnFinish = this.handleOnFinish.bind(this);
   }
@@ -75,10 +79,24 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
     });
   }
 
+  private successAddedMessage() {
+    return message.success("Ваш вопрос добавлен");
+  }
+
+  private errorAddedMessage() {
+    return message.success("Ошибка при добавлении вопроса");
+  }
+
   // функция отправки данных для создания вопроса
   private handleOnFinish(values: IFormValues) {
-    // console.log(this.formRef.current.submit());
+    const formData = new FormData();
+    const input = document.getElementById("image") as any;
+
+    for (let i = 0; i < input.files.length; i++) {
+      formData.append("inputFiles", input.files[i]);
+    }
     const postData = {
+      questionId: this.questionUUID,
       title: values.questionTitle,
       explanation: values.questionExplanation,
       tags: values.questionTags,
@@ -91,6 +109,20 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
       url: "http://localhost:4000/addQuestion",
       values: postData,
     });
+    fetch(`http://localhost:4000/addQuestionImage/${this.questionUUID}`, {
+      method: "POST",
+      body: formData,
+    })
+      .catch((err) => {
+        this.errorAddedMessage();
+        return err;
+      })
+      .then((res) => {
+        this.formRef.current.resetFields();
+        this.successAddedMessage();
+        this.props.history.push("/");
+        return res.json();
+      });
   }
 
   render() {
@@ -106,6 +138,7 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
           initialValues={{ questionTags: [spheres[0].value] }}
           encType="multipart/form-data"
           layout={"vertical"}
+          ref={this.formRef}
         >
           <Form.Item
             label={this.FormLabels.question}
@@ -114,6 +147,7 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
             <TextArea
               placeholder={"Введите текст вопроса(не более 1000 символов)"}
               required
+              className={"textarea-styles"}
             />
           </Form.Item>
           <Form.Item
@@ -135,17 +169,18 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
               required
             />
           </Form.Item>
-          {/* <form
-            action="http://localhost:4000/addQuestion"
-            encType="multipart/form-data"
-            method="post"
-            ref={this.formRef}
+          <Form.Item
+            label={this.FormLabels.pictures}
+            name={FormItemsNames.questionPictures}
           >
-            <div>
-              <input type="file" name="test" />
-            </div>
-          </form> */}
-
+            <input
+              id={"image"}
+              type="file"
+              name="test"
+              multiple
+              ref={this.imageFormRef}
+            />
+          </Form.Item>
           <Form.Item name={FormItemsNames.submitBtn}>
             <Button
               text="Отправить"
@@ -155,22 +190,6 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
             />
           </Form.Item>
         </Form>
-
-        {/* <form
-          action="http://localhost:4000/test"
-          encType="multipart/form-data"
-          method="post"
-        >
-          <div>
-            <input type="file" name="test" />
-            <input
-              type="text"
-              placeholder="Number of speakers"
-              name="nspeakers"
-            />
-            <input type="submit" value="Get me the stats!" />
-          </div>
-        </form> */}
       </div>
     );
   }

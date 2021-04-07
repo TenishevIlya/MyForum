@@ -6,14 +6,15 @@ import QuestionExplanation from "../../components/QuestionExplanation/QuestionEx
 import Spinner from "../../components/Spinner/Spinner";
 import { Divider } from "antd";
 import { timestampToMilliseconds } from "../../features";
-import Button from "../../components/Button/Button";
 import { Modal, Form, Input, message } from "antd";
 import { createPostRequest } from "../../features";
 import Answer from "../Answer/Answer";
-import { map } from "lodash";
 import moment from "moment";
 import { store } from "../../store/store";
-import { isEmpty } from "lodash";
+import { isEmpty, map } from "lodash";
+import ImageContainer from "../../components/ImageContainer/ImageConatiner";
+import { v4 } from "uuid";
+import "./QuestionPage.styles.css";
 
 const { TextArea } = Input;
 
@@ -30,12 +31,15 @@ class QuestionPage extends React.PureComponent<
     super(props);
 
     this.formRef = React.createRef();
+    this.imageFormRef = React.createRef();
 
     this.handleModalOpen = this.handleModalOpen.bind(this);
     this.handleAnswerSubmit = this.handleAnswerSubmit.bind(this);
   }
 
   private formRef: any;
+  private imageFormRef: any;
+  private readonly answerUUID = v4();
 
   private readonly ComponentKeys = {
     formName: "addAnswerForm",
@@ -59,6 +63,14 @@ class QuestionPage extends React.PureComponent<
     return message.error(
       "Для того, чтобы ответить на вопрос необоходимо авторизоваться",
     );
+  }
+
+  private successAddedMessage() {
+    return message.success("Ваш ответ добавлен");
+  }
+
+  private errorAddedMessage() {
+    return message.success("Ошибка при добавлении ответа");
   }
 
   public componentDidMount() {
@@ -87,19 +99,42 @@ class QuestionPage extends React.PureComponent<
   }
 
   private handleAnswerSubmit() {
+    const formData = new FormData();
+    const input = document.getElementById("image") as any;
+
+    for (let i = 0; i < input.files.length; i++) {
+      formData.append("inputFiles", input.files[i]);
+    }
+
     const postData = {
       ...this.formRef.current.getFieldsValue(),
       questionId: this.questionId,
       creationDate: moment().unix() + 60 * moment().utcOffset(),
       userId: store.getState().personReducer[0].id,
+      answerUUID: this.answerUUID,
     };
     createPostRequest({
       url: "http://localhost:4000/addAnswer",
       values: postData,
     });
-    fetch(`http://localhost:4000/question/answers/${this.questionId}`)
-      .then((res) => res.json())
-      .then((answers) => this.setState({ questionAnswers: answers }));
+    fetch(`http://localhost:4000/addAnswerImage/${this.answerUUID}`, {
+      method: "POST",
+      body: formData,
+    })
+      .catch((err) => {
+        this.errorAddedMessage();
+        return err;
+      })
+      .then((res) => {
+        this.formRef.current.resetFields();
+        this.successAddedMessage();
+        return res.json();
+      })
+      .then(() => {
+        fetch(`http://localhost:4000/question/answers/${this.questionId}`)
+          .then((res) => res.json())
+          .then((answers) => this.setState({ questionAnswers: answers }));
+      });
     this.handleModalOpen();
   }
 
@@ -128,12 +163,22 @@ class QuestionPage extends React.PureComponent<
             <TextArea
               placeholder={"Введите текст вопроса(не более 1000 символов)"}
               required
+              className={"textarea-styles"}
             />
           </Form.Item>
           <Form.Item
             label={this.FormLabels.answerImg}
             name={FormItemsNames.answerImg}
-          ></Form.Item>
+          >
+            <input
+              id={"image"}
+              type="file"
+              name="answerImage"
+              multiple
+              ref={this.imageFormRef}
+              style={{ marginBottom: "25px" }}
+            />
+          </Form.Item>
         </Form>
       </Modal>
     );
@@ -154,12 +199,9 @@ class QuestionPage extends React.PureComponent<
           creationDateTimestamp={timestampToMilliseconds(
             questionData.creationDate,
           )}
+          addQuestionCallback={this.handleModalOpen}
         />
-        <Button
-          text={"Добавить ответ"}
-          type={"primary"}
-          onClick={this.handleModalOpen}
-        />
+        <ImageContainer imagesPaths={this.state.questionData?.pictureUrl} />
         <Divider />
         <QuestionExplanation explanationText={questionData.explanation} />
         <Divider />
