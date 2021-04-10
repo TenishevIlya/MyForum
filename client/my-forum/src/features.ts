@@ -9,13 +9,12 @@ export const createPostRequest = <T>(requestData: IRequestData<T>) => {
     body: JSON.stringify(values),
     headers: {
       "Content-Type": `${contentType}`,
-      // "Content-Type": "multipart/form-data; boundary=asdasasd",
     },
   })
-    .catch((err) => err)
     .then((res) => {
       return res.json();
-    });
+    })
+    .catch((err) => err);
 };
 
 export const createGetRequest = <T>(requestData: IRequestData<T>) => {
@@ -24,10 +23,10 @@ export const createGetRequest = <T>(requestData: IRequestData<T>) => {
   return fetch(url, {
     headers: { ...values } as any,
   })
-    .catch((err) => err)
     .then((res) => {
       return res.json();
     })
+    .catch((err) => err)
     .then((data) => {
       callBack && callBack(data);
     });

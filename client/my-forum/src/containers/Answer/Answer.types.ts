@@ -8,4 +8,6 @@ export type TAnswerData = {
   creation_date: number;
   email?: string;
   picture_url: string[] | undefined;
+  name: string;
+  avatar_url: string[];
 };

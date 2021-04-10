@@ -10,3 +10,7 @@
 .image-block-style {
   margin-right: 15px;
 }
+
+.image-styles {
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
+}

@@ -1,10 +1,9 @@
 .answer-container-styles {
   display: flex;
-  /* border: 1px solid black; */
   margin-bottom: 20px;
-  /* align-items: center; */
   width: 50%;
   position: relative;
+  padding: 15px;
 }
 
 .answer-avatar-block-styles {
@@ -30,4 +29,8 @@
 
 .answer-author-styles {
   color: #0077cc;
+}
+
+.answer-data-styles {
+  margin-bottom: 10px;
 }

@@ -13,7 +13,6 @@ import { store } from "./store/store";
 
 ReactDOM.render(
   <Provider store={store}>
-    {/* <React.StrictMode> */}
     <Router>
       <Switch>
         <MainLayout>
@@ -32,7 +31,6 @@ ReactDOM.render(
         </MainLayout>
       </Switch>
     </Router>
-    {/* </React.StrictMode> */}
   </Provider>,
   document.getElementById("root"),
 );

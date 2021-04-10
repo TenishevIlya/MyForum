@@ -1,5 +1,6 @@
 .spinner-style {
-  position: absolute;
+  position: absolute !important;
   left: 49.5%;
   top: 50%;
+  z-index: 10;
 }

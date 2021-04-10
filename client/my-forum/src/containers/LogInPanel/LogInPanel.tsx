@@ -7,7 +7,7 @@ import type { TAuthorize } from "../../utils/types";
 import { useDispatch } from "react-redux";
 import { logInUser, logOffUser } from "../../store/actions";
 import { store } from "../../store/store";
-import { eq, isUndefined } from "lodash";
+import { eq, isNull, isEmpty } from "lodash";
 import { Avatar } from "../../components/Avatar/Avatar";
 import { useHistory } from "react-router-dom";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -49,6 +49,10 @@ const LogInPanel: React.FC = () => {
     message.success("Вы успешно зашли в свой профиль");
   };
 
+  const successMessageOnRegistrate = () => {
+    message.success("Пользователь создан");
+  };
+
   const handleModalSubmit = () => {
     authForm
       .validateFields()
@@ -60,7 +64,7 @@ const LogInPanel: React.FC = () => {
             values: modalFormRef.current.getFieldsValue(),
             callBack: setUser,
           }).then(() => {
-            if (!isUndefined(store.getState().personReducer[0])) {
+            if (!isEmpty(store.getState().personReducer)) {
               successMessageOnLogIn();
             }
           });
@@ -72,6 +76,7 @@ const LogInPanel: React.FC = () => {
   const unSetUser = () => {
     dispatch(logOffUser());
     setFormFailed(false);
+    history.location.pathname === "/user" && history.push("/");
   };
 
   const handleDrawerSubmit = () => {
@@ -92,6 +97,7 @@ const LogInPanel: React.FC = () => {
               registrateForm.resetFields();
               setFormFailed(false);
               handleDrawer();
+              successMessageOnRegistrate();
             }
           });
         }
@@ -131,7 +137,7 @@ const LogInPanel: React.FC = () => {
           ]}
         >
           <Input
-            placeholder={"Введите логин"}
+            placeholder={"Введите адрес электронной почты"}
             onChange={() => setFormFailed(false)}
           />
         </Form.Item>
@@ -145,6 +151,22 @@ const LogInPanel: React.FC = () => {
             },
           ]}
         >
+          <Input
+            placeholder={"Введите имя"}
+            onChange={() => setFormFailed(false)}
+          />
+        </Form.Item>
+        <Form.Item
+          label={FormLabels.password}
+          name={FormItemsNames.password}
+          rules={[
+            {
+              required: true,
+              message: "Поле обязательно к заполнению",
+            },
+          ]}
+          hasFeedback
+        >
           <Password
             placeholder={"Введите пароль"}
             onChange={() => setFormFailed(false)}
@@ -153,12 +175,24 @@ const LogInPanel: React.FC = () => {
         <Form.Item
           label={FormLabels.passwordRepeat}
           name={FormItemsNames.passwordRepeat}
-          rules={[{ required: true, message: "Поле обязательно к заполнению" }]}
+          dependencies={["password"]}
+          hasFeedback
+          rules={[
+            {
+              required: true,
+              message: "Поле обязательно к заполнению",
+            },
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue("password") === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error("Пароли не совпадают"));
+              },
+            }),
+          ]}
         >
-          <Password
-            placeholder={"Повторите пароль"}
-            onChange={() => setFormFailed(false)}
-          />
+          <Input.Password placeholder={"Повторите пароль"} />
         </Form.Item>
         {isFormFailed && (
           <span className={"failed-form-message-styles"}>
@@ -269,22 +303,6 @@ const LogInPanel: React.FC = () => {
               onChange={() => setFormFailed(false)}
             />
           </Form.Item>
-          <Form.Item
-            label={FormLabels.password}
-            name={FormItemsNames.password}
-            validateStatus={isFormFailed ? "error" : undefined}
-            rules={[
-              {
-                required: true,
-                message: "Поле обязательно к заполнению",
-              },
-            ]}
-          >
-            <Password
-              placeholder={"Введите пароль"}
-              onChange={() => setFormFailed(false)}
-            />
-          </Form.Item>
           {isFormFailed && (
             <span className={"failed-form-message-styles"}>
               {"Неверный логин или пароль"}
@@ -319,16 +337,29 @@ const LogInPanel: React.FC = () => {
     });
   };
 
+  const getAvatarPath = () => {
+    return !isEmpty(store.getState().personReducer.avatar_url[0])
+      ? store.getState().personReducer.avatar_url[0]
+      : undefined;
+  };
+
   return isUserAuthorized ? (
-    <div style={{ display: "flex", alignItems: "center" }}>
-      <div onClick={linkToProfile} className={"avatar-styles"}>
-        <Avatar />
+    <div
+      key={"authorizedInfo"}
+      style={{ display: "flex", alignItems: "center" }}
+    >
+      <div
+        key={"avatarContainer"}
+        onClick={linkToProfile}
+        className={"avatar-styles"}
+      >
+        <Avatar key={"avatar"} src={getAvatarPath()} />
       </div>
-      <Button text={"Выйти"} onClick={showConfirm} />
+      <Button key={"logOffBtn"} text={"Выйти"} onClick={showConfirm} />
     </div>
   ) : (
     <>
-      <Button key="btn" text={"Войти"} onClick={handleModal} />
+      <Button key="logInBtn" text={"Войти"} onClick={handleModal} />
       {renderModal}
       {renderDrawer}
     </>

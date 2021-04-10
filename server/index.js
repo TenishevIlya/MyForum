@@ -3,39 +3,63 @@ import cors from "cors";
 import mysql from "mysql2";
 import dotenv from "dotenv";
 import bodyParser from "body-parser";
-import { preparedQuestionData, preparedAnswerData } from "./src/features.js";
 import multer from "multer";
 import path from "path";
 import { authorize, registrate } from "./src/authorization.js";
-import fileUpload from "express-fileupload";
-import fs from "fs";
 
+import {
+  getQuestions,
+  getQuestionById,
+  getQuestionAnswers,
+  addQuestionImage,
+  addQuestion,
+  updatePopularity,
+} from "./src/questions.js";
+import { addAnswer, addAnswerImage } from "./src/answers.js";
+import { updateUser, updateUserImage } from "./src/users.js";
+
+/**
+ * Объявление движка дискового пространства. Дает полный контроль над размещением файлов на диск.
+ *
+ * Доступно две опции, расположение destination и имя файла filename.
+ * Обе эти функции определяют, где будет находиться файл после загрузки.
+ *
+ * destination используется, чтобы задать каталог, в котором будут размещены файлы. Может быть задан строкой (например, '/tmp/uploads').
+ * Если не задано расположение destination, операционная система воспользуется для сохранения каталогом для временных файлов.
+ *
+ * filename используется, чтобы определить, как будет назван файл внутри каталога.
+ * Если имя файла filename не задано, каждому файлу будет сконфигурировано случайное имя без расширения файла.
+ */
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "public/img/");
   },
   filename: function (req, file, cb) {
-    cb(null, file.originalname); //Appending extension
+    cb(null, file.originalname);
   },
 });
 
-const __dirname = path.resolve();
-
+// Конфигурация подключения глобальных переменных
 dotenv.config();
 
+// Создание объекта, который будет представляет приложение
 const app = express();
 
-let questionImageFileUrl;
-let questionAddData;
-
+/**
+ * Встраивание в конвейер обработки запроса на функцию middleware
+ * (cors - пакет, предоставляющий возможность доступа к ресурсам другого домена)
+ */
 app.use(cors());
+/**
+ * Встраивание в конвейер обработки запроса на функцию middleware
+ * (bodyParser - пакет для парсинга body запроса)
+ */
 app.use(bodyParser.json());
-app.use(express.static(__dirname));
-// app.use(fileUpload());
-// app.use(multer({ dest: "src/images" }));
 
+// Инициализация multer для работы с загрузкой файлов
 var upload = multer({ storage: storage });
 
+// Подключение к базе данных(в качестве параметров используются глобальные переменные из файла .env)
 export const Connection = mysql
   .createConnection({
     host: process.env.DB_HOST,
@@ -45,112 +69,32 @@ export const Connection = mysql
   })
   .promise();
 
+// Проверка на случай ошибки
 Connection.connect((err) => {
   if (err) {
     return err;
   }
 });
 
-app.get("/", (req, res) => {
-  Connection.query(
-    `SELECT * FROM questions ORDER BY questions.popularity_index DESC`,
-  ).then((result) => {
-    const models = result[0].map((row) => {
-      return preparedQuestionData(row);
-    });
+// Маршруты для работы с вопросами(get - на получение, post - на добавление данных)
+app.get("/", getQuestions);
+app.get("/question/:id", getQuestionById);
+app.get("/question/answers/:id", getQuestionAnswers);
+app.post("/addQuestionImage/:id", upload.any(), addQuestionImage);
+app.post("/addQuestion", addQuestion);
+app.put("/question/updatePopularity/:id", updatePopularity);
 
-    res.status(200).json(models);
-  });
-});
+// Маршруты для работы с ответами(post - на добавление данных)
+app.post("/addAnswer", upload.any(), addAnswer);
+app.post("/addAnswerImage/:answerUUID", upload.any(), addAnswerImage);
 
-app.get("/question/:id", (req, res) => {
-  Connection.query(`SELECT * FROM questions WHERE id=${req.params.id}`).then(
-    (result) => {
-      res.status(200).json(preparedQuestionData(result[0][0], __dirname));
-    },
-  );
-});
+// Маршруты для работы с пользователями(put - на апдейт данных, post - на добавление данных)
+app.put("/user/update/:id", updateUser);
+app.post("/user/updateImage/:id", upload.any(), updateUserImage);
 
-app.get("/question/answers/:id", (req, res) => {
-  Connection.query(
-    `SELECT answers.id, answers.question_id, answers.explanation, answers.picture_url, answers.answer_author_id, answers.creation_date, users.id, users.email FROM answers INNER JOIN users ON answers.answer_author_id=users.id WHERE question_id=${req.params.id}`,
-  ).then((result) => {
-    // console.log(preparedAnswerData(result[0], __dirname));
-    res.status(200).json(preparedAnswerData(result[0], __dirname));
-  });
-});
-
-app.post("/addQuestionImage/:id", upload.any(), (req, res) => {
-  const filesPath = req.files.map((file) => {
-    return file.path.split("\\").join(`/`);
-  });
-
-  Connection.query(
-    `UPDATE questions SET picture_url="${filesPath.join(
-      ",",
-    )}" WHERE question_id="${req.params.id}"`,
-  ).then((result) => {
-    res.status(201).json(result[0]);
-  });
-});
-
-app.post("/addQuestion", (req, res) => {
-  const {
-    title,
-    tags,
-    creationDate,
-    status,
-    popularityIndex,
-    explanation,
-    questionId,
-  } = req.body;
-
-  Connection.query(
-    `INSERT INTO questions(question_id, title, tags, popularity_index, creation_date, status, explanation) VALUES ("${questionId}", "${title}", "${tags.join()}", ${popularityIndex}, ${creationDate}, "${status}", "${explanation}")`,
-  ).then((result) => {
-    res.status(201).json(result);
-  });
-});
-
-app.post("/addAnswerImage/:answerUUID", upload.any(), (req, res) => {
-  const filesPath = req.files.map((file) => {
-    return file.path.split("\\").join(`/`);
-  });
-
-  Connection.query(
-    `UPDATE answers SET picture_url="${filesPath.join(
-      ",",
-    )}" WHERE answer_uuid="${req.params.answerUUID}"`,
-  ).then((result) => {
-    res.status(201).json(result[0]);
-  });
-});
-
-app.post("/addAnswer", upload.any(), (req, res) => {
-  const {
-    answerExplanation,
-    questionId,
-    creationDate,
-    userId,
-    answerUUID,
-  } = req.body;
-
-  Connection.query(
-    `INSERT INTO answers(question_id, explanation, answer_author_id, creation_date, answer_uuid) VALUES ("${questionId}", "${answerExplanation}", ${userId}, "${creationDate}", "${answerUUID}")`,
-  ).then((result) => {
-    res.status(201).json(result);
-  });
-});
-
-app.put("/question/updatePopularity/:id", (req, res) => {
-  Connection.query(
-    `UPDATE questions SET popularity_index=popularity_index+1 WHERE id=${req.params.id}`,
-  ).then((result) => {
-    res.status(200).json(result[0]);
-  });
-});
-
-app.post("/registrate", registrate);
+// Маршруты для работы с авторизацией и регистрацией(get - на получение, post - на добавление данных)
 app.get("/authorize", authorize);
+app.post("/registrate", registrate);
 
+// Запуск сервера
 app.listen(process.env.PORT, () => console.log("Server is running"));

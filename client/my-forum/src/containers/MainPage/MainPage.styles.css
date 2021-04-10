@@ -10,3 +10,12 @@
 .main-page-items-container-header {
   text-align: center;
 }
+
+.questions-limit-header-styles {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.empty-questions-styles {
+  margin-bottom: 15px !important;
+}

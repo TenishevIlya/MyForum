@@ -6,15 +6,19 @@ import Button from "../../components/Button/Button";
 
 moment.locale("ru");
 
+// Компонент шапки вопроса
 const QuestionHeader: FC<IQuestionHeaderProps> = ({
   title,
   creationDateTimestamp,
   timesViewed,
   addQuestionCallback,
 }: IQuestionHeaderProps) => {
-  var momentNow = moment(creationDateTimestamp);
-  const creationDateFromNow = momentNow.fromNow();
+  // Получаем дату создания вопроса по миллисекундам
+  var momentDateNow = moment(creationDateTimestamp);
+  // Смотрим, сколько времени прошло с создания вопроса
+  const creationDateFromNow = momentDateNow.fromNow();
 
+  // Отрисовка
   return (
     <div className={"question-header-style"}>
       <div>

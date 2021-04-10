@@ -110,7 +110,7 @@ class QuestionPage extends React.PureComponent<
       ...this.formRef.current.getFieldsValue(),
       questionId: this.questionId,
       creationDate: moment().unix() + 60 * moment().utcOffset(),
-      userId: store.getState().personReducer[0].id,
+      userId: store.getState().personReducer.id,
       answerUUID: this.answerUUID,
     };
     createPostRequest({

@@ -1,5 +1,5 @@
 import React from "react";
-import { Form, Input, Select, Tag, message } from "antd";
+import { Form, Input, Select, message } from "antd";
 import { spheres } from "../../../const";
 import { createPostRequest, keyGenerator } from "../../../features";
 import type { TStatus } from "../../../utils/types";
@@ -56,16 +56,6 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
     formName: "addForm",
     formKey: "addFormKey",
   };
-
-  // метод рендеринга тегов внутри выпадающего списка
-  private tagRenderer(props: any): React.ReactElement {
-    const { label, value, onClose } = props;
-    return (
-      <Tag color={value} closable={true} onClose={onClose}>
-        {label}
-      </Tag>
-    );
-  }
 
   // метод рендеринга компонентов выпадающегося списка
   private selectItemsRenderer() {

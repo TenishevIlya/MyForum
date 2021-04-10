@@ -16,3 +16,7 @@
   flex-direction: column;
   justify-content: space-between;
 }
+
+.forum-list-item-title-style {
+  margin-bottom: 10px;
+}
