@@ -2,7 +2,6 @@ import React from "react";
 import { Form, Input, Select, message } from "antd";
 import { spheres } from "../../../const";
 import { createPostRequest, keyGenerator } from "../../../features";
-import type { TStatus } from "../../../utils/types";
 import "./AddQuestionForm.styles.css";
 import Button from "../../../components/Button/Button";
 import type {
@@ -14,7 +13,6 @@ import { withRouter } from "react-router";
 import type { TQuestionParameters } from "../../../utils/types";
 import { v4 } from "uuid";
 
-// библотека для работы со временем
 import moment from "moment";
 
 const { TextArea } = Input;
@@ -28,15 +26,21 @@ export const FormItemsNames = {
   submitBtn: "submitBtn",
 } as const;
 
+// Компонент формы для добавления вопроса
 class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
   private formRef: any;
   private imageFormRef: any;
 
+  // Генерация уникального uuid для отправки изображений
   private readonly questionUUID = v4();
 
   constructor(props: IAddQuestionFormProps) {
     super(props);
 
+    /**
+     * Создаем рефы для форм с текстовыми данными и формы с изображением
+     * Рефы дают возможность получить доступ к DOM-узлам или React-элементам, созданным в рендер-методе.
+     */
     this.formRef = React.createRef();
     this.imageFormRef = React.createRef();
 
@@ -79,26 +83,33 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
 
   // функция отправки данных для создания вопроса
   private handleOnFinish(values: IFormValues) {
+    /**
+     * Для отправки сообщений мы отдельно получаем данные из поля и формируем объект для их корректной отправки на сервер
+     */
     const formData = new FormData();
     const input = document.getElementById("image") as any;
 
+    // Добавляем данные изображения для отправки
     for (let i = 0; i < input.files.length; i++) {
       formData.append("inputFiles", input.files[i]);
     }
+
+    // Текстовые данные для отправки
     const postData = {
       questionId: this.questionUUID,
       title: values.questionTitle,
       explanation: values.questionExplanation,
       tags: values.questionTags,
       creationDate: moment().unix() + 60 * moment().utcOffset(),
-      status: "OPENED" as TStatus,
       popularityIndex: 0,
       pictures: values.questionPictures,
     };
+    // Отправляем текстовые данные на сервер
     createPostRequest<TQuestionParameters>({
       url: "http://localhost:4000/addQuestion",
       values: postData,
     });
+    // Отдельно отправляем данные по изображениям на сервер
     fetch(`http://localhost:4000/addQuestionImage/${this.questionUUID}`, {
       method: "POST",
       body: formData,
@@ -110,6 +121,7 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
       .then((res) => {
         this.formRef.current.resetFields();
         this.successAddedMessage();
+        // Переход на главную в случае успешного добавления
         this.props.history.push("/");
         return res.json();
       });
@@ -141,14 +153,6 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
             />
           </Form.Item>
           <Form.Item
-            label={this.FormLabels.tags}
-            name={FormItemsNames.questionTags}
-          >
-            <Select mode="multiple" showArrow showSearch={false}>
-              {this.selectItemsRenderer()}
-            </Select>
-          </Form.Item>
-          <Form.Item
             label={this.FormLabels.explanation}
             name={FormItemsNames.questionExplanation}
           >
@@ -158,6 +162,14 @@ class AddQuestionForm extends React.PureComponent<IAddQuestionFormProps> {
               }
               required
             />
+          </Form.Item>
+          <Form.Item
+            label={this.FormLabels.tags}
+            name={FormItemsNames.questionTags}
+          >
+            <Select mode="multiple" showArrow showSearch={false}>
+              {this.selectItemsRenderer()}
+            </Select>
           </Form.Item>
           <Form.Item
             label={this.FormLabels.pictures}

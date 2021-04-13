@@ -6,12 +6,16 @@ import "./LinksPanel.styles.css";
 import { store } from "../../store/store";
 import { message } from "antd";
 
+// Контейнер с ссылками в верхней панели форума
 const LinksPanel: React.FC<ILinksPanelProps> = ({
   items,
 }: ILinksPanelProps) => {
+  // state для проверки авторизован пользователь или нет
   const [isUserLoggedIn, setUserLoggedIn] = useState<boolean>();
+  // генератор уникальных ключей для элементов контейнера
   const generateItemKey = (index: number) => `item_${index}`;
 
+  // Сообщение, появляющееся при попытке задать вопрос, не будучи авторизованным
   const needLoginMessage = (needLogIn: boolean) =>
     needLogIn &&
     !isUserLoggedIn &&
@@ -25,6 +29,11 @@ const LinksPanel: React.FC<ILinksPanelProps> = ({
     }
   });
 
+  /**
+   * Настройка пути для ссылки
+   * Если для ссылки необходима авторизация и пользователь не авторизован, то перехода по ссылке не будет
+   * В обратном случае или тогда, когда авторизация не нужна - переход осуществится
+   */
   const isAbleToRedirect = (needLogIn: boolean, itemPath: string) => {
     if (needLogIn && !isUserLoggedIn) {
       return "#";
@@ -40,6 +49,7 @@ const LinksPanel: React.FC<ILinksPanelProps> = ({
 
   return (
     <section>
+      {/*Проходим по всему массиву ссылок и рендерим их*/}
       {map(items, (item, index) => {
         return (
           <Link

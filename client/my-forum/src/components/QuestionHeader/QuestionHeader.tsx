@@ -3,6 +3,7 @@ import { IQuestionHeaderProps } from "./QuestionHeader.types";
 import "./QuestionHeader.styles.css";
 import moment from "moment";
 import Button from "../../components/Button/Button";
+import "moment/locale/ru";
 
 moment.locale("ru");
 
@@ -15,8 +16,13 @@ const QuestionHeader: FC<IQuestionHeaderProps> = ({
 }: IQuestionHeaderProps) => {
   // Получаем дату создания вопроса по миллисекундам
   var momentDateNow = moment(creationDateTimestamp);
-  // Смотрим, сколько времени прошло с создания вопроса
-  const creationDateFromNow = momentDateNow.fromNow();
+  /**
+   * Смотрим, сколько времени прошло с создания вопроса
+   * Специально делаем replace для случая, когда локализация не совсем корректна с точки зрения логики
+   */
+  const creationDateFromNow = momentDateNow
+    .fromNow()
+    .replace("через 3 часа", "около 3-х часов назад");
 
   // Отрисовка
   return (

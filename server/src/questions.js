@@ -41,14 +41,13 @@ export const addQuestion = (req, res) => {
     title,
     tags,
     creationDate,
-    status,
     popularityIndex,
     explanation,
     questionId,
   } = req.body;
 
   Connection.query(
-    `INSERT INTO questions(question_id, title, tags, popularity_index, creation_date, status, explanation) VALUES ("${questionId}", "${title}", "${tags.join()}", ${popularityIndex}, ${creationDate}, "${status}", "${explanation}")`,
+    `INSERT INTO questions(question_id, title, tags, popularity_index, creation_date, explanation) VALUES ("${questionId}", "${title}", "${tags.join()}", ${popularityIndex}, ${creationDate}, "${explanation}")`,
   ).then((result) => {
     res.status(201).json(result);
   });

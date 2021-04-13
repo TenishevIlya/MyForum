@@ -1,10 +1,10 @@
+/*Стили для базового лэйаута*/
 .main-layout-style {
   width: 100%;
   padding: 25px 40px;
-  /* background-color: rgb(231, 231, 231); */
 }
 
+/*Стили для шапки базового лэйаута*/
 .main-layout-header-style {
   border: 1px solid rgb(235, 237, 240);
-  /* background-color: rgb(170, 200, 224) !important; */
 }

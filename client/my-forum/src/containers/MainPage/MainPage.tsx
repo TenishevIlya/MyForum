@@ -13,10 +13,12 @@ export type TLimit = {
   limit: string;
 };
 
-class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
+// Стили контейра главной страницы
+class Main extends React.PureComponent<{}, IMainPageState> {
   constructor(props: IMainPageProps) {
     super(props);
 
+    // Привязка обработчика к текущему контексту
     this.renderQuestions = this.renderQuestions.bind(this);
     this.getMenu = this.getMenu.bind(this);
     this.getLimitCountValue = this.getLimitCountValue.bind(this);
@@ -24,11 +26,15 @@ class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
     this.getCorrectLimitText = this.getCorrectLimitText.bind(this);
   }
 
+  // state контейнера
   public readonly state = {
+    // state, отвечающий за список всех вопросов
     questions: null,
+    // state, отвечающий фильтрацию
     currentLimitText: "Все вопросы",
   } as IMainPageState;
 
+  // При монтировании компонента загружаем все вопросы без фильтрации
   public componentDidMount() {
     createGetRequest<TLimit>({
       url: "http://localhost:4000",
@@ -37,10 +43,12 @@ class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
     });
   }
 
+  // Изменение текста меню с фильтрацией в зависимости от его изменения
   private getCorrectLimitText(limit: string) {
     return limit === "all" ? "Все вопросы" : `Топ-${limit} вопросов`;
   }
 
+  // Реализация фильтрации
   private getLimitCountValue(data: any) {
     this.setState({ currentLimitText: this.getCorrectLimitText(data.key) });
     createGetRequest<TLimit>({
@@ -50,10 +58,12 @@ class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
     });
   }
 
+  // Обновление данных после фильтрации
   private updateQuestionsInfo(data: any) {
     this.setState({ questions: data });
   }
 
+  // Отрисовка компонета списка вопросов
   private renderQuestions() {
     const { questions } = this.state;
 
@@ -71,6 +81,7 @@ class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
     return items;
   }
 
+  // Меню с фильтрацией
   private getMenu() {
     return (
       <Menu onClick={this.getLimitCountValue}>
@@ -88,6 +99,12 @@ class Main extends React.PureComponent<IMainPageProps, IMainPageState> {
   }
 
   render() {
+    /**
+     * Отрисовываем страницу
+     * Если вопросы есть, то внутри мы увидим их список
+     * Если нет, то будет пустой контейнер с информацией
+     * Так же есть спиннер, который будет появляться, пока информация не загрузилась
+     */
     return (
       <article className={"main-page-items-container"}>
         {this.state.questions ? (

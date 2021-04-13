@@ -1,7 +1,6 @@
 import { FC, useState, useRef } from "react";
 import { Input, Row, Col, Form, Switch, message } from "antd";
 import { Avatar } from "../../components/Avatar/Avatar";
-import { IUserProfileProps } from "./UserProfile.types";
 import { store } from "../../store/store";
 import Button from "../../components/Button/Button";
 import { logInUser } from "../../store/actions";
@@ -12,8 +11,11 @@ import { useHistory } from "react-router";
 
 const { Password } = Input;
 
-const UserProfile: FC<IUserProfileProps> = () => {
+// Контейнер профиля пользователя
+const UserProfile: FC = () => {
   const [isFormDisabled, setFormDisabled] = useState(true);
+
+  // state, отвечающий за то, будет ли при отправке удаляться аватар
   const [deletePicture, setPictureDelete] = useState(false);
   const [userAvatar, setUserAvatar] = useState(
     !isEmpty(store.getState().personReducer.avatar_url)
@@ -33,20 +35,31 @@ const UserProfile: FC<IUserProfileProps> = () => {
     message.error("Ошибка при изменении информации");
   };
 
+  // Экземпляр форм, благодаря которому реализуем контроль над формой
   const [form] = Form.useForm();
 
+  // Обработчик выключенного состояния формы(т.е. когда все поля заблокированны)
   const handleDisableForm = () => {
     setFormDisabled(!isFormDisabled);
   };
 
+  // Обработчик обновления информации
   const handleUserDataUpdate = () => {
     const putData = { ...form.getFieldsValue() };
     const formData = new FormData();
     const input = document.getElementById("image") as any;
 
+    /**
+     * По части обработки изменения и сброса аватара - логика такая же, как и в QuestionPage и AddQuestionForm
+     */
+
     for (let i = 0; i < input.files.length; i++) {
       formData.append("inputFiles", input.files[i]);
     }
+
+    /**
+     * В условиях добавляем дополнительное поле в formData, которое будет описывать, нужно ли нам обновлять аватар
+     */
     if (userAvatar === undefined && input.files.length > 0) {
       formData.append("shouldUpdate", "true");
     }
@@ -63,6 +76,8 @@ const UserProfile: FC<IUserProfileProps> = () => {
     if (input.files.length === 0 && deletePicture) {
       formData.append("shouldUpdate", "true");
     }
+
+    // После валтдации формы делаем запрос на апдейт текстовой информации и информации по аваатару
     form.validateFields().then(() => {
       fetch(
         `http://localhost:4000/user/update/${
@@ -109,6 +124,10 @@ const UserProfile: FC<IUserProfileProps> = () => {
     });
   };
 
+  /**
+   * Подписка на глобальные стор, чтобы отслеживать информацию по наличию аватара
+   * В зависимости от этого производим отображение  аватара в профиле
+   */
   store.subscribe(() => {
     const userAvatar =
       isUndefined(store.getState().personReducer.avatar_url) ||
@@ -118,10 +137,18 @@ const UserProfile: FC<IUserProfileProps> = () => {
     setUserAvatar(userAvatar);
   });
 
+  // Получение пути к аватару
   const getAvatarPath = () => {
     return !isEmpty(userAvatar) && !deletePicture ? userAvatar : undefined;
   };
 
+  /**
+   * Отрисовка формы со всеми полями
+   * В режиме "отключено" нельзя производить никаких изменений
+   * Если нужно сделать изменения, то нажимаем на свитчер(компонент с 203 по 205 строку)
+   * После этого поля разблокируются и можно менять информацию
+   * Удаление аватара происходит по нажатию на иконку справа от него
+   */
   return (
     <Row gutter={16}>
       <Col>

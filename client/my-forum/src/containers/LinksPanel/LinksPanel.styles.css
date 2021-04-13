@@ -1,8 +1,10 @@
+/*Стили для контейнера ссылок*/
 .links-panel-style {
   display: flex;
   justify-content: space-between;
 }
 
+/*Стили для элемента контейнера ссылок*/
 .link-panel-item {
   font-size: 20px;
   margin-right: 10px;

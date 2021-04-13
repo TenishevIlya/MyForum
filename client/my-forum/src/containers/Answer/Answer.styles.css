@@ -1,3 +1,4 @@
+/*Стили контейнера с вопросом*/
 .answer-container-styles {
   display: flex;
   margin-bottom: 20px;
@@ -6,15 +7,18 @@
   padding: 15px;
 }
 
+/*Стили блока с аватаром*/
 .answer-avatar-block-styles {
   display: flex;
   align-items: center;
 }
 
+/*Стили разделителя между блоком автара и ответом на вопрос*/
 .divider-styles {
   height: 100% !important;
 }
 
+/*Стили для отображения времени, когда был задан вопрос*/
 .creation-time-styles {
   position: absolute;
   right: 0;
@@ -22,15 +26,18 @@
   font-size: 12px;
 }
 
+/*Стили для контейнера с объяснением*/
 .explanation-container-styles {
   width: calc(100% - 70px);
   display: flex;
 }
 
+/*Стили для отображения автора вопроса*/
 .answer-author-styles {
   color: #0077cc;
 }
 
+/*Стили для текста объяснения*/
 .answer-data-styles {
   margin-bottom: 10px;
 }

@@ -1,17 +1,21 @@
+/*Стили для элемента списка*/
 .list-item-style {
   display: inline;
   margin-right: 10px;
 }
 
+/*Стили для даты элемента списка*/
 .list-item-date-style {
   font-weight: bold;
 }
 
+/*Стили для всего списка*/
 .list-style {
   margin-left: 0;
   margin-left: -40px;
 }
 
+/*Стили для компонента шапки вопроса*/
 .question-header-style {
   display: flex;
   justify-content: space-between;

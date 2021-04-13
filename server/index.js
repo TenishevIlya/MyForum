@@ -45,6 +45,8 @@ dotenv.config();
 // Создание объекта, который будет представляет приложение
 const app = express();
 
+const __dirname = path.resolve();
+
 /**
  * Встраивание в конвейер обработки запроса на функцию middleware
  * (cors - пакет, предоставляющий возможность доступа к ресурсам другого домена)
@@ -55,6 +57,8 @@ app.use(cors());
  * (bodyParser - пакет для парсинга body запроса)
  */
 app.use(bodyParser.json());
+
+app.use(express.static(__dirname));
 
 // Инициализация multer для работы с загрузкой файлов
 var upload = multer({ storage: storage });

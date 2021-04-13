@@ -1,7 +1,9 @@
+// интерфейс контейнера ответа
 export interface IAnswerTypesProps {
   answerData: TAnswerData;
 }
 
+// тип для данных ответа
 export type TAnswerData = {
   explanation: string;
   authorName?: string;

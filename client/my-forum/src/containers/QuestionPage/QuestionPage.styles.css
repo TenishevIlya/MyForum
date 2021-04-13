@@ -1,3 +1,4 @@
+/*Стили для полей ввода*/
 .textarea-styles {
-  height: 100px;
+  height: 150px !important;
 }

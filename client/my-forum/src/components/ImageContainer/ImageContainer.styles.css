@@ -1,16 +1,20 @@
+/*Стили для горизонтального расположения картинок*/
 .image-container-horizontal-styles {
   display: flex;
 }
 
+/*Стили для вертикаьлного расположения картинок*/
 .image-container-vertical-styles {
   display: flex;
   flex-direction: column;
 }
 
+/*Стили блока картинки*/
 .image-block-style {
   margin-right: 15px;
 }
 
+/*Стили самой картинки*/
 .image-styles {
   box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
 }

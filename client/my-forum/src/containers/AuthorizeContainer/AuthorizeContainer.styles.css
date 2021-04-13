@@ -1,0 +1,27 @@
+/*Стили для футера модального окна*/
+.modal-footer-style {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 5px;
+}
+
+/*Стили для текста предложения создать аккаунт*/
+.create-account-text {
+  cursor: pointer;
+  color: cadetblue;
+}
+
+/*Стили для футера выезжающего компонента*/
+.drawer-footer-styles {
+  text-align: right;
+}
+
+/*Стили для сообщения при ошибке в формах*/
+.failed-form-message-styles {
+  background-color: "#ff4d4f";
+}
+
+/*Стили для аватара*/
+.avatar-styles {
+  cursor: pointer;
+}

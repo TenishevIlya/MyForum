@@ -1,13 +1,15 @@
+/*Стили гайда*/
 .add-question-guide {
-  width: 300px;
+  width: 350px;
   height: 100%;
 }
 
+/*Стили шапки гайда*/
 .add-question-guide-header {
   border-left: 1px solid #d9d9d9;
   border-right: 1px solid #d9d9d9;
   border-top: 1px solid #d9d9d9;
-  width: 300px;
+  width: 350px;
   text-align: left;
   padding: 5px 16px;
 }

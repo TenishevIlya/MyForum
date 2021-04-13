@@ -1,3 +1,4 @@
+/*Стили формы*/
 .add-question-form {
   width: 700px;
   height: 100%;
@@ -6,10 +7,12 @@
   border-radius: 2px;
 }
 
+/*Стили шапки формы*/
 .add-question-form-header {
   text-align: center;
 }
 
+/*Стили для полей ввода*/
 .textarea-styles {
-  height: 100px;
+  height: 150px !important;
 }

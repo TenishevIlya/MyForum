@@ -1,7 +1,7 @@
 /**
  * Форматируем путь, чтобы он был связан с сервером
  */
-const createServerPath = (path) => {
+export const createServerPath = (path) => {
   return path === ""
     ? []
     : "http://localhost:4000" + "\\" + path.split("/").join("\\");
@@ -12,7 +12,7 @@ const createServerPath = (path) => {
  */
 export const picturesPathMapper = (paths) => {
   if (paths === null) {
-    return null;
+    return [];
   }
   return paths.split(",").map((path) => createServerPath(path));
 };
@@ -28,7 +28,6 @@ export const preparedQuestionData = (rawData) => {
     tags,
     popularity_index,
     creation_date,
-    status,
     explanation,
   } = rawData;
 
@@ -41,7 +40,6 @@ export const preparedQuestionData = (rawData) => {
     tags: tags.split(","),
     popularityIndex: popularity_index,
     creationDate: creation_date,
-    status,
     explanation,
   };
 };

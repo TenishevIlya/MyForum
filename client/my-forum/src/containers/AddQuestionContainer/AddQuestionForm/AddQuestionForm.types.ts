@@ -1,6 +1,7 @@
 import { FormItemsNames } from "./AddQuestionForm";
 import { RouteComponentProps } from "react-router";
 
+// Интерфейс, описывающий поля формы
 export interface IFormValues {
   [FormItemsNames.questionTitle]: string;
   [FormItemsNames.questionTags]: string[];
@@ -8,6 +9,5 @@ export interface IFormValues {
   [FormItemsNames.questionPictures]: any;
 }
 
-export interface IAddQuestionFormProps extends RouteComponentProps {
-  onSuccess(): void;
-}
+// Интерфейс компонента
+export interface IAddQuestionFormProps extends RouteComponentProps {}

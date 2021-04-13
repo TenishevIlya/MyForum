@@ -1,3 +1,4 @@
+/*Стили для контейнера главной страницы*/
 .main-page-items-container {
   width: 700px;
   display: flex;
@@ -7,15 +8,13 @@
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
-.main-page-items-container-header {
-  text-align: center;
-}
-
+/*Стили для верхнего элемента выпадающего меню*/
 .questions-limit-header-styles {
   font-size: 18px;
   margin-bottom: 10px;
 }
 
+/*Стили для пустого контейнера*/
 .empty-questions-styles {
   margin-bottom: 15px !important;
 }

@@ -2,17 +2,13 @@ import { PureComponent } from "react";
 import "./AddQuestionContainer.styles.css";
 import AddQuestionForm from "./AddQuestionForm/AddQuestionForm";
 import AddQuestionGuide from "./AddQuestionGuide/AddQuestionGuide";
-import { Alert } from "antd";
 
+// Контейнер, включающий в себя все элементы страницы с добавлением вопроса
 class AddQuestionContainer extends PureComponent {
-  private renderAlert() {
-    return <Alert message="Success Text" type="success" />;
-  }
-
   render() {
     return (
       <div className={"add-question-container"}>
-        <AddQuestionForm onSuccess={this.renderAlert} />
+        <AddQuestionForm />
         <AddQuestionGuide />
       </div>
     );
