@@ -1,10 +1,18 @@
 /*Стили для базового лэйаута*/
-.main-layout-style {
+.main-layout-styles {
   width: 100%;
   padding: 25px 40px;
 }
 
 /*Стили для шапки базового лэйаута*/
-.main-layout-header-style {
+.main-layout-header-styles {
   border: 1px solid rgb(235, 237, 240);
+  background-color: #e0f4ff !important;
+}
+
+/*Стили контейнера контента лэйаута*/
+.main-layout-container-styles {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 72px);
 }

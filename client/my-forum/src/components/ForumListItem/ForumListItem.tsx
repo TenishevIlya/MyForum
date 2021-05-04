@@ -18,9 +18,11 @@ class ForumListItem extends React.PureComponent<IForumListItemProps> {
 
   // Стили карточки с вопросом
   private readonly cardStyle = {
-    width: "600px",
+    width: "95%",
     padding: "0 20px !important",
     marginBottom: "20px",
+    marginLeft: "20px",
+    marginRight: "20px",
   };
 
   // Функция перехода к конкретному вопросу

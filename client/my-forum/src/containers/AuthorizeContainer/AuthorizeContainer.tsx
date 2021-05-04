@@ -49,10 +49,12 @@ const AuthorizeContainer: React.FC = () => {
    */
   const [isUserAuthorized, setUserAuthorized] = useState(false);
   /**
-   * state, отвечающий за то, чтобы производились действий в случае ошибки
+   * stat'ы, отвечающие за то, чтобы производились действий в случае ошибки
    * т.е. выделение красным, соответсвующие сообщения и т.д.
+   * отдельный state для модалки и для выезжающего компонента
    */
-  const [isFormFailed, setFormFailed] = useState(false);
+  const [isModalFormFailed, setModalFormFailed] = useState(false);
+  const [isDrawerFormFailed, setDrawerFormFailed] = useState(false);
 
   // рефы для доступа к формам в модалке и выезжающем компоненте
   const modalFormRef = useRef({} as any);
@@ -114,7 +116,8 @@ const AuthorizeContainer: React.FC = () => {
   // функция очищающая данные в глобальном сторе
   const unSetUser = () => {
     dispatch(logOffUser());
-    setFormFailed(false);
+    setModalFormFailed(false);
+    setDrawerFormFailed(false);
     history.location.pathname === "/user" && history.push("/");
   };
 
@@ -132,10 +135,10 @@ const AuthorizeContainer: React.FC = () => {
             values: drawerFormRef.current.getFieldsValue(),
           }).then((res) => {
             if (eq(res.notUniq, true)) {
-              setFormFailed(true);
+              setDrawerFormFailed(true);
             } else {
               registrateForm.resetFields();
-              setFormFailed(false);
+              setDrawerFormFailed(false);
               handleDrawer();
               successMessageOnRegistrate();
             }
@@ -148,7 +151,7 @@ const AuthorizeContainer: React.FC = () => {
   // обработка действий при закрытии модального окна
   const handleModal = useCallback(() => {
     setModalOpened(!isModalOpened);
-    setFormFailed(false);
+    setModalFormFailed(false);
     authForm.resetFields();
   }, [isModalOpened, authForm]);
 
@@ -182,7 +185,7 @@ const AuthorizeContainer: React.FC = () => {
         >
           <Input
             placeholder={"Введите адрес электронной почты"}
-            onChange={() => setFormFailed(false)}
+            onChange={() => setDrawerFormFailed(false)}
           />
         </Form.Item>
         <Form.Item
@@ -197,7 +200,7 @@ const AuthorizeContainer: React.FC = () => {
         >
           <Input
             placeholder={"Введите имя"}
-            onChange={() => setFormFailed(false)}
+            onChange={() => setDrawerFormFailed(false)}
           />
         </Form.Item>
         <Form.Item
@@ -213,7 +216,7 @@ const AuthorizeContainer: React.FC = () => {
         >
           <Password
             placeholder={"Введите пароль"}
-            onChange={() => setFormFailed(false)}
+            onChange={() => setDrawerFormFailed(false)}
           />
         </Form.Item>
         <Form.Item
@@ -240,14 +243,14 @@ const AuthorizeContainer: React.FC = () => {
           <Input.Password placeholder={"Повторите пароль"} />
         </Form.Item>
         {/*Сообщение, появляющееся при попытке регистрации с уже имеющимся email'ом*/}
-        {isFormFailed && (
+        {isDrawerFormFailed && (
           <span className={"failed-form-message-styles"}>
             {"Пользователь с таким email уже существует"}
           </span>
         )}
       </Form>
     );
-  }, [isFormFailed]);
+  }, [isDrawerFormFailed]);
 
   // нижняя часть выезжающего компонента
   const renderDrawerFooter = useMemo(() => {
@@ -259,8 +262,8 @@ const AuthorizeContainer: React.FC = () => {
           onClick={handleDrawer}
         />
         <Button
-          type={"primary"}
           text={"Отправить"}
+          type={"primary"}
           onClick={handleDrawerSubmit}
         />
       </div>
@@ -278,8 +281,8 @@ const AuthorizeContainer: React.FC = () => {
           </span>
         </span>
         <Button
-          type={"primary"}
           text={"Войти"}
+          type={"primary"}
           onClick={handleModalSubmit}
         ></Button>
       </div>
@@ -323,7 +326,7 @@ const AuthorizeContainer: React.FC = () => {
           <Form.Item
             label={FormLabels.email}
             name={FormItemsNames.email}
-            validateStatus={isFormFailed ? "error" : undefined}
+            validateStatus={isModalFormFailed ? "error" : undefined}
             rules={[
               {
                 type: "email",
@@ -334,13 +337,13 @@ const AuthorizeContainer: React.FC = () => {
           >
             <Input
               placeholder={"Введите логин"}
-              onChange={() => setFormFailed(false)}
+              onChange={() => setModalFormFailed(false)}
             />
           </Form.Item>
           <Form.Item
             label={FormLabels.password}
             name={FormItemsNames.password}
-            validateStatus={isFormFailed ? "error" : undefined}
+            validateStatus={isModalFormFailed ? "error" : undefined}
             rules={[
               {
                 required: true,
@@ -350,11 +353,11 @@ const AuthorizeContainer: React.FC = () => {
           >
             <Password
               placeholder={"Введите пароль"}
-              onChange={() => setFormFailed(false)}
+              onChange={() => setModalFormFailed(false)}
             />
           </Form.Item>
           {/*Сообщение, появляющееся при попытке авторизации с неправильными данными*/}
-          {isFormFailed && (
+          {isModalFormFailed && (
             <span className={"failed-form-message-styles"}>
               {"Неверный логин или пароль"}
             </span>
@@ -362,7 +365,7 @@ const AuthorizeContainer: React.FC = () => {
         </Form>
       </Modal>
     );
-  }, [isModalOpened, handleModal, renderModalFooter, isFormFailed]);
+  }, [isModalOpened, handleModal, renderModalFooter, isModalFormFailed]);
 
   /**
    * Подписка на глобальный стор, чтобы отслеживать его изменения
@@ -373,7 +376,7 @@ const AuthorizeContainer: React.FC = () => {
       setUserAuthorized(true);
       handleModal();
     } else {
-      setFormFailed(true);
+      setModalFormFailed(true);
       setUserAuthorized(false);
     }
   });
@@ -417,11 +420,21 @@ const AuthorizeContainer: React.FC = () => {
       >
         <Avatar key={"avatar"} src={getAvatarPath()} />
       </div>
-      <Button key={"logOffBtn"} text={"Выйти"} onClick={showConfirm} />
+      <Button
+        key={"logOffBtn"}
+        type={"primary"}
+        text={"Выйти"}
+        onClick={showConfirm}
+      />
     </div>
   ) : (
     <>
-      <Button key="logInBtn" text={"Войти"} onClick={handleModal} />
+      <Button
+        key="logInBtn"
+        text={"Войти"}
+        type={"primary"}
+        onClick={handleModal}
+      />
       {renderModal}
       {renderDrawer}
     </>

@@ -20,7 +20,6 @@ class Main extends React.PureComponent<{}, IMainPageState> {
 
     // Привязка обработчика к текущему контексту
     this.renderQuestions = this.renderQuestions.bind(this);
-    this.getMenu = this.getMenu.bind(this);
     this.getLimitCountValue = this.getLimitCountValue.bind(this);
     this.updateQuestionsInfo = this.updateQuestionsInfo.bind(this);
     this.getCorrectLimitText = this.getCorrectLimitText.bind(this);
@@ -30,30 +29,30 @@ class Main extends React.PureComponent<{}, IMainPageState> {
   public readonly state = {
     // state, отвечающий за список всех вопросов
     questions: null,
-    // state, отвечающий фильтрацию
-    currentLimitText: "Все вопросы",
+    // state, отвечающий за текущий фильтрацию
+    currentLimit: 0,
   } as IMainPageState;
 
   // При монтировании компонента загружаем все вопросы без фильтрации
   public componentDidMount() {
     createGetRequest<TLimit>({
       url: "http://localhost:4000",
-      values: { limit: "all" },
+      values: { limit: "0" },
       callBack: this.updateQuestionsInfo,
     });
   }
 
   // Изменение текста меню с фильтрацией в зависимости от его изменения
   private getCorrectLimitText(limit: string) {
-    return limit === "all" ? "Все вопросы" : `Топ-${limit} вопросов`;
+    return limit === "0" ? "Все вопросы" : `Топ-${limit} вопросов`;
   }
 
   // Реализация фильтрации
   private getLimitCountValue(data: any) {
-    this.setState({ currentLimitText: this.getCorrectLimitText(data.key) });
+    this.setState({ currentLimit: data.target.value });
     createGetRequest<TLimit>({
       url: "http://localhost:4000",
-      values: { limit: data.key as string },
+      values: { limit: data.target.value as string },
       callBack: this.updateQuestionsInfo,
     });
   }
@@ -81,23 +80,6 @@ class Main extends React.PureComponent<{}, IMainPageState> {
     return items;
   }
 
-  // Меню с фильтрацией
-  private getMenu() {
-    return (
-      <Menu onClick={this.getLimitCountValue}>
-        <Menu.Item key={"all"}>
-          <p>Все вопросы</p>
-        </Menu.Item>
-        <Menu.Item key={"10"}>
-          <p>Топ-10 вопросов</p>
-        </Menu.Item>
-        <Menu.Item key={"50"}>
-          <p>Топ-50 вопросов</p>
-        </Menu.Item>
-      </Menu>
-    );
-  }
-
   render() {
     /**
      * Отрисовываем страницу
@@ -105,31 +87,62 @@ class Main extends React.PureComponent<{}, IMainPageState> {
      * Если нет, то будет пустой контейнер с информацией
      * Так же есть спиннер, который будет появляться, пока информация не загрузилась
      */
+
     return (
-      <article className={"main-page-items-container"}>
-        {this.state.questions ? (
-          <>
-            <Dropdown overlay={this.getMenu} placement={"bottomCenter"}>
-              <a
-                className={"questions-limit-header-styles"}
-                onClick={(e) => e.preventDefault()}
-              >
-                {this.state.currentLimitText} <DownOutlined />
-              </a>
-            </Dropdown>
-            {!isEmpty(this.state.questions) ? (
-              this.renderQuestions()
-            ) : (
-              <Empty
-                description={"Пока не задано ни одного вопроса"}
-                className={"empty-questions-styles"}
-              />
-            )}
-          </>
-        ) : (
-          <Spinner size={"large"} />
-        )}
-      </article>
+      <>
+        {/* Список с фильтрацией */}
+        <ul
+          className={"navigation-list-styles"}
+          onClick={this.getLimitCountValue}
+        >
+          <li
+            className={
+              this.state.currentLimit === 0
+                ? "navigation-list-item-selected-styles"
+                : "navigation-list-item-styles"
+            }
+            value={"0"}
+          >
+            Все вопросы
+          </li>
+          <li
+            className={
+              this.state.currentLimit === 10
+                ? "navigation-list-item-selected-styles"
+                : "navigation-list-item-styles"
+            }
+            value={"10"}
+          >
+            Топ-10 вопросов
+          </li>
+          <li
+            className={
+              this.state.currentLimit === 50
+                ? "navigation-list-item-selected-styles"
+                : "navigation-list-item-styles"
+            }
+            value={"50"}
+          >
+            Топ-50 вопросов
+          </li>
+        </ul>
+        <article className={"main-page-items-container"}>
+          {this.state.questions ? (
+            <>
+              {!isEmpty(this.state.questions) ? (
+                this.renderQuestions()
+              ) : (
+                <Empty
+                  description={"Пока не задано ни одного вопроса"}
+                  className={"empty-questions-styles"}
+                />
+              )}
+            </>
+          ) : (
+            <Spinner size={"large"} />
+          )}
+        </article>
+      </>
     );
   }
 }

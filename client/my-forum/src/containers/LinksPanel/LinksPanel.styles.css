@@ -9,3 +9,11 @@
   font-size: 20px;
   margin-right: 10px;
 }
+
+/*Стили иконки приложения*/
+.app-icon-style {
+  height: 36px;
+  width: 36px;
+  margin-right: 20px;
+  margin-left: 8px;
+}

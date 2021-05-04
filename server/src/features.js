@@ -60,4 +60,7 @@ export const preparedAnswerData = (rawData) => {
   });
 };
 
-export const getLimit = (limit) => (limit === "all" ? "" : `LIMIT ${limit}`);
+/**
+ * Формируем фильтр в зависимости от параметра, переданного с клиента
+ */
+export const getLimit = (limit) => (limit === "0" ? "" : `LIMIT ${limit}`);

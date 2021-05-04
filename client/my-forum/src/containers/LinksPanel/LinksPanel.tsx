@@ -49,6 +49,10 @@ const LinksPanel: React.FC<ILinksPanelProps> = ({
 
   return (
     <section>
+      <img
+        className={"app-icon-style"}
+        src={"http://localhost:4000/public/icon/appIcon.png"}
+      />
       {/*Проходим по всему массиву ссылок и рендерим их*/}
       {map(items, (item, index) => {
         return (

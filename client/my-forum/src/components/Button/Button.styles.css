@@ -1,0 +1,6 @@
+/*Переопределение базового стиля UI библиотеки, для того, чтобы поменять цвет кнопок*/
+.ant-btn-primary {
+  background: #003eb3 !important;
+  color: #fff !important;
+  border: none !important;
+}

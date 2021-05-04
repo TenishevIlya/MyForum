@@ -15,14 +15,9 @@ const QuestionHeader: FC<IQuestionHeaderProps> = ({
   addQuestionCallback,
 }: IQuestionHeaderProps) => {
   // Получаем дату создания вопроса по миллисекундам
-  var momentDateNow = moment(creationDateTimestamp);
-  /**
-   * Смотрим, сколько времени прошло с создания вопроса
-   * Специально делаем replace для случая, когда локализация не совсем корректна с точки зрения логики
-   */
-  const creationDateFromNow = momentDateNow
-    .fromNow()
-    .replace("через 3 часа", "около 3-х часов назад");
+  var creationTime = moment
+    .utc(creationDateTimestamp)
+    .format("DD.MM.YYYY, HH:mm");
 
   // Отрисовка
   return (
@@ -32,9 +27,7 @@ const QuestionHeader: FC<IQuestionHeaderProps> = ({
         <ul className={"list-style"}>
           <li className={"list-item-style"}>
             <span>{"Дата создания вопроса: "}</span>
-            <span className={"list-item-date-style"}>
-              {creationDateFromNow}
-            </span>
+            <span className={"list-item-date-style"}>{creationTime}</span>
           </li>
           <li className={"list-item-style"}>
             <span>{"Просмотрен: "}</span>
@@ -44,11 +37,7 @@ const QuestionHeader: FC<IQuestionHeaderProps> = ({
           </li>
         </ul>
       </div>
-      <Button
-        text={"Добавить ответ"}
-        type={"primary"}
-        onClick={addQuestionCallback}
-      />
+      <Button text={"Добавить ответ"} onClick={addQuestionCallback} />
     </div>
   );
 };

@@ -7,6 +7,7 @@ import { TLinkItem } from "../../containers/LinksPanel/LinksPanel.types";
 import { withRouter, RouteComponentProps } from "react-router";
 import { store } from "../../store/store";
 import { isEmpty } from "lodash";
+import Footer from "../../components/Footer/Footer";
 
 // Интерфейс базового лэйаута расширяющий тип пропсов для роутинга
 interface IMainLayoutProps extends RouteComponentProps {}
@@ -15,6 +16,7 @@ interface IMainLayoutProps extends RouteComponentProps {}
 class MainLayout extends React.PureComponent<IMainLayoutProps> {
   // Базовые ссылки в верхней панели
   private readonly layoutLinks: TLinkItem[] = [
+    { text: "На главную", path: "/", needLogIn: false },
     { text: "Задать вопрос", path: "/addQuestion", needLogIn: true },
   ];
 
@@ -39,16 +41,19 @@ class MainLayout extends React.PureComponent<IMainLayoutProps> {
   render() {
     return (
       <>
-        <PageHeader
-          key={"header"}
-          className={"main-layout-header-style"}
-          title={"MyForum"}
-          extra={[<LogInPanel />]}
-          subTitle={<LinksPanel items={this.layoutLinks} />}
-        />
-        <main key={"main"} className={"main-layout-style"}>
-          {this.props.children}
-        </main>
+        <div className="main-layout-container-styles">
+          <PageHeader
+            key={"header"}
+            className={"main-layout-header-styles"}
+            title={"MyForum"}
+            extra={[<LogInPanel />]}
+            subTitle={<LinksPanel items={this.layoutLinks} />}
+          />
+          <main key={"main"} className={"main-layout-styles"}>
+            {this.props.children}
+          </main>
+        </div>
+        <Footer />
       </>
     );
   }

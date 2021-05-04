@@ -208,7 +208,6 @@ const UserProfile: FC = () => {
         </Form.Item>
         <Button
           text={"Сохранить"}
-          type={"primary"}
           disabled={isFormDisabled}
           onClick={handleUserDataUpdate}
         />
